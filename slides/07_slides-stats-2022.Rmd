@@ -1,0 +1,676 @@
+---
+title: "Lea.orange[R]ning about Statistics"
+subtitle: "Tables, Chi Square and Fisher's exact test, KM curves and log rank tests"
+author: 
+  - Zachary Thompson 
+institute: "Moffitt Cancer Center"
+date: '`r strftime(Sys.time(), "%B %d, %Y")`'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    chakra: libs/remark-0.14.0.min.js
+    css: 
+      - css/moffitt-xaringan.css
+      - css/moffitt-xaringan-extra.css
+      - css/tachyons.moffitt.css
+    seal: false
+    nature:
+      titleSlideClass: ["bottom", "left"]
+      slideNumberFormat: "%current%"
+      highlightStyle: atom-one-light
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE, 
+  hiline = TRUE,
+   comment = NA 
+)
+options(width = 70)
+
+
+  #library(easystats)
+  library(tidyverse)
+  library(kableExtra)
+  library(ggplot2)
+  library(janitor)
+  library(gridExtra)
+  library(broom)
+  library(survival)
+  library(survminer)
+   
+
+   
+# MERGE and making smoking variable 
+clinical <- read.csv(file = "F:\\myGitRepo\\Introduction-to-R\\data\\tcga-clinical.csv", header = TRUE)
+geneexp <- read.csv(file = "F:\\myGitRepo\\Introduction-to-R\\data\\tcga-gene-exp.csv", header = TRUE)
+
+ 
+# intersect(names(clinical), names(geneexp))
+ 
+# dim(clinical)
+# dim(geneexp)
+ 
+tcga <- left_join(clinical, geneexp, by = "bcr_patient_barcode")
+#dim(tcga)
+
+
+
+tcga <- tcga %>% mutate( 
+  smoking = case_when(
+    tobacco_smoking_history %in% c(
+      "Current reformed smoker for < or = 15 years",
+      "Current reformed smoker for > 15 years",
+      "Current Reformed Smoker, Duration Not Specified"
+    ) ~ "Former",
+    tobacco_smoking_history %in% c("Current smoker") ~ "Current",
+    tobacco_smoking_history %in% c("Lifelong Non-smoker") ~ "Never",
+    is.na(tobacco_smoking_history) ~ NA_character_
+  )
+)
+ 
+
+# LOAD clinical data ####
+load("F:\\myGitRepo\\Introduction-to-R\\data\\clinical_survival_pancancer_atlas.RData")
+dim(tcga)
+tcga <- left_join(tcga, dat[,c("bcr_patient_barcode","OS.time")], by = "bcr_patient_barcode")
+ dim(tcga)
+
+#table(tcga$smoking, useNA = "always")
+
+
+```
+
+name: title
+class: left bottom hide-count
+
+<!-- Slide Extras -->
+
+```{r xaringan-extras, echo=FALSE, results="asis"}
+# remotes::install_github("gadenbuie/xaringanExtra")
+xaringanExtra::use_xaringan_extra(c(
+  "tile_view"
+  # "editable",
+  # "animate",
+  # "panelset"
+))
+```
+
+```{r xaringan-panelset, echo=FALSE}
+xaringanExtra::use_panelset()
+```
+
+
+<!-- Title Slide -->
+<!-- <div class="talk-logo"></div> -->
+
+.talk-meta[
+.talk-title[
+# `r rmarkdown::metadata$title`
+
+`r rmarkdown::metadata$subtitle`
+]
+
+.talk-author[
+`r paste(rmarkdown::metadata$author, collapse = " &middot; ")`<br>
+.moffitt-gray[`r paste(rmarkdown::metadata$institute, collapse = ", ")`]
+]
+
+.talk-date.moffitt-gray[
+`r knitr::knit(text = rmarkdown::metadata$date)`
+]
+]
+
+
+```{css echo=FALSE}
+/* Define title slide image or logo here */
+.talk-logo {
+  width: 400px;
+  height: 750px;
+  position: absolute;
+  top: 6%;
+  right: 7%;
+  /* background-image: url('img/r4ds-cover.png'); */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: contain;
+}
+```
+
+<!-- Moffitt Logo and Slide Border ----
+
+All slides except "title" and "inverse" slides
+have the Moffitt Color Bar and logo.
+
+Additional classes are provided to disable both:
+
+- `class: no-logo` hides the logo
+- `class: no-border` hides the border
+
+or to force either to be shown
+
+- `class: moffitt-slide-logo` shows the logo
+- `class: moffitt-slide-border` shows the border
+-->
+
+---
+
+## What you will learn to run
+ 
+  
+- Review of tables with janitor package
+  
+- Chi Square and Fisher’s Exact test
+
+- Kaplan-Meier Curves and estimates
+
+- Log rank tests
+
+
+---
+
+## Review of tables
+ 
+
+```{r comment=NA}
+
+janitor::tabyl(tcga, radiation_therapy, vital_status )
+   
+```
+ 
+ 
+---
+
+## Review of tables
+ 
+
+```{r comment=NA}
+
+janitor::tabyl(tcga, radiation_therapy, vital_status, 
+               show_na = FALSE )
+
+```
+
+---
+
+## Review of tables
+```{r comment=NA}
+
+tcga %>% 
+  tabyl(smoking, gender, show_na = FALSE )
+```
+
+
+---
+
+## Review of tables
+```{r comment=NA}
+
+tcga %>% 
+  tabyl(smoking, gender, show_na = FALSE ) %>% 
+  adorn_totals(where = c("row","col"))
+```
+
+---
+
+## Review of tables
+```{r comment=NA}
+
+
+tcga %>% 
+  tabyl(smoking, gender, show_na = FALSE ) %>% 
+  adorn_totals(where = c("row","col")) %>% 
+  adorn_percentages(denominator = "col") 
+```
+
+---
+
+## Review of tables
+```{r comment=NA}
+
+tcga %>% 
+  tabyl(smoking, gender, show_na = FALSE ) %>% 
+  adorn_totals(where = c("row","col")) %>% 
+  adorn_percentages(denominator = "col") %>% 
+  adorn_pct_formatting(digits = 0)  
+
+```
+
+---
+
+## Review of tables
+```{r comment=NA}
+
+tcga %>% 
+  tabyl(smoking, gender, show_na = FALSE ) %>% 
+  adorn_totals(where = c("row","col")) %>% 
+  adorn_percentages(denominator = "col") %>% 
+  adorn_pct_formatting(digits = 0) %>% 
+  adorn_ns(position = "front") 
+ 
+```
+
+ 
+ 
+---
+
+
+# Pearson’s chi-squared test
+ 
+The chi squared test is a non-parametric test that can be applied to contingency tables with various dimensions. The name of the test originates from the chi-squared distribution, which is the distribution for the squares of independent standard normal variables. This is the distribution of the test statistic of the chi squared test, which is defined by the sum of chi-square values for all cells arising from the difference between a cell’s observed value and the expected value, normalized by the expected value.
+ 
+$\chi ^{2}$ = $\sum_{ij}$ $\frac{(O_{ij} - E_{ij})^{2}}{E_{ij}}$ 
+
+
+*   $\chi ^{2}$ = chi square statistic
+*   $O_{ij}$ = observed value
+*   $E_{ij}$ = expected value
+
+
+---
+## Pearson’s chi-squared test
+ 
+The null hypothesis of the Chi-Square test is that no relationship exists between the categorical variables in the population; they are independent.
+
+ 
+```{r chisqtest, echo=FALSE ,  include=TRUE}
+ tcga %>% 
+  tabyl(smoking, gender, show_na = FALSE ) %>% 
+  adorn_totals(where = c("row","col")) %>% 
+  adorn_percentages(denominator = "col") %>% 
+  adorn_pct_formatting(digits = 0)   %>% 
+  adorn_ns(position = "front") 
+ 
+
+ 
+```
+ 
+
+
+---
+
+## Pearson’s chi-squared test
+ 
+The null hypothesis of the Chi-Square test is that no relationship exists between the categorical variables in the population; they are independent.
+
+ 
+
+```{r chisqtest1, eval=TRUE,  include=TRUE}
+ 
+tcga %>% tabyl( smoking, gender , show_na = FALSE ) %>%
+  chisq.test()
+
+```
+ 
+The p-value is very low so we reject the null hypothesis that there is no association between the variables. 
+
+---
+
+## Pearson’s chi-squared test
+ 
+  More women are never smokers and more men are current smokers. 
+ 
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r geombar, echo = TRUE, fig.show = "hide"}
+ggplot(tcga %>% filter(!is.na(smoking)),
+       aes(x = gender, fill = smoking )) +  
+  geom_bar(position = "fill") +
+  labs(y = "proportion")
+
+```
+]
+
+.panel[.panel-name[Plot]
+
+```{r ref.label = "geombar", echo = FALSE}
+```
+]
+]
+ 
+
+
+---
+
+# Fisher’s Exact test
+ 
+Similar to Chi square test. Use the Fisher's exact test of independence when you have two nominal variables and you want to see whether the proportions of one variable are different depending on the value of the other variable. Use it when the sample size is small.
+
+
+How the test works:
+
+Unlike most statistical tests, Fisher's exact test does not use a mathematical function that estimates the probability of a value of a test statistic; instead, you calculate the probability of getting the observed data, and all data sets with more extreme deviations, under the null hypothesis that the proportions are the same. 
+
+
+---
+
+## Fisher’s Exact test
+ 
+
+```{r fishers1, eval=TRUE,  include=TRUE}
+tcga <- tcga  %>% mutate(Death = ifelse(vital_status == "Dead"," Yes","No"))
+
+tcga %>% filter(race %in% c("ASIAN")) %>% 
+  tabyl(gender, Death, show_na = TRUE) %>% 
+  adorn_totals(where = c("row","col")) %>% 
+  adorn_percentages(denominator = "row") %>% 
+  adorn_pct_formatting(digits = 0) %>% 
+  adorn_ns(position = "front") 
+
+```
+
+---
+
+## Fisher’s Exact test
+  
+The null hypothesis is that the relative proportions of one variable are independent of the second variable. For 2 by 2 tables, the null of conditional independence is equivalent to the hypothesis that the odds ratio equals one. 
+
+
+```{r fishers2, eval=TRUE,  include=TRUE}
+
+tcga %>% filter(race %in% c("ASIAN")) %>% 
+  tabyl(gender, Death, show_na = TRUE) %>% fisher.test() 
+
+
+```
+ 
+
+ 
+---
+
+## Fisher's Exact test
+   
+ 
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r geombarfishers, echo = TRUE, fig.show = "hide"}
+ggplot(tcga %>% filter(race %in% c("ASIAN" )),
+       aes(x = gender, fill = Death )) +  
+  geom_bar(position = "fill") +
+  labs(y = "proportion")
+
+```
+]
+
+.panel[.panel-name[Plot]
+
+```{r ref.label = "geombarfishers", echo = FALSE}
+```
+]
+]
+ 
+
+ 
+ 
+---
+ 
+# Kaplan-Meier Curves and estimates
+ 
+The Kaplan–Meier estimator,also known as the product limit estimator, is a non-parametric statistic used to estimate the survival function from time to event data. In medical research, it is often used to measure the fraction of patients living for a certain amount of time after treatment. In other fields, Kaplan–Meier estimators may be used to measure the time-to-failure of machine parts.
+
+
+ 
+---
+
+## Kaplan-Meier Curves and estimates
+ 
+ 
+
+A plot of the Kaplan–Meier estimator is a series of declining horizontal steps which, with a large enough sample size, approaches the true survival function for that population. The value of the survival function between successive distinct sampled observations ("clicks") is assumed to be constant.
+
+An important advantage of the Kaplan–Meier curve is that the method can take into account some types of censored data, particularly right-censoring, which occurs if a patient withdraws from a study, is lost to follow-up, or is alive without event occurrence at last follow-up. On the plot, small vertical tick-marks state individual patients whose survival times have been right-censored. When no truncation or censoring occurs, the Kaplan–Meier curve is the complement of the empirical distribution function.
+
+---
+
+## Kaplan-Meier Curves and estimates
+ 
+The estimator of the survival function: 
+ 
+$\hat{S}(t)$ = $\prod_{i:t_{i}<t}$ $(1-\frac{d_{i}}{n_{i}})$ 
+
+*   $\hat{S}(t)$ = probability survival is longer than $t$ 
+*   $d_{i}$ = number of deaths (events) that happened at time $t_{i}$ 
+*   $n_{i}$ = number of individuals that have survived to time $t_{i}$
+
+---
+ 
+## Kaplan-Meier Curves 
+ 
+ 
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r kmcode, echo = TRUE, fig.show = "hide"}
+
+ OS_obj <- survival::Surv(tcga$OS.time/365, I(tcga$vital_status=="Dead")) 
+ kmfit <-  survfit(OS_obj ~ smoking, data = tcga)
+  
+ 
+
+
+```
+]
+
+.panel[.panel-name[R Result]
+
+```{r kmfit, echo = TRUE, fig.show = "hide"}
+
+ kmfit 
+ 
+```
+]
+
+
+]
+
+ 
+---
+ 
+ 
+```{r KMplotcode }    
+p <-  ggsurvplot(kmfit, data = tcga,
+           # Add median survival lines
+           surv.median.line = "hv", 
+           # Change legends: title & labels
+           title= "Overall Survival by smoking status", 
+           xlab ="Years", 
+           legend.title = "",
+           legend.labs = c("Current","Former","Never" ),
+           # Add p-value and CIs
+           pval = FALSE,
+           conf.int = FALSE,
+           # Add risk table
+           risk.table = TRUE,
+           tables.height = 0.2,
+           tables.theme = theme_cleantable(),
+           # Color palettes.
+           palette = c("#F8766D","#00BA38", "#00BFC4"),  
+           # Change ggplot2 theme
+           ggtheme = theme_bw(), 
+           risk.table.title = "Number at risk") 
+ 
+```
+  
+---
+ 
+ 
+```{r KMplotdisplay , echo = FALSE, fig.height=4.5 , fig.width = 8}    
+p  
+ 
+```   
+
+---
+ 
+# Log rank test
+  
+The log rank test is a hypothesis test to compare the survival distributions of two or more samples. It is a nonparametric test and appropriate to use when the data are right skewed and censored. It is widely used in clinical trials to establish the efficacy of a new treatment in comparison with a control treatment when the measurement is the time to event (such as the time from initial treatment to a heart attack). The test is sometimes called the Mantel–Cox test, named after Nathan Mantel and David Cox. The logrank test can also be viewed as a time-stratified Cochran–Mantel–Haenszel test.
+  
+ 
+---
+ 
+ 
+ 
+# Log rank test R code
+ 
+```{r logrank }    
+
+survdiff(OS_obj ~ smoking, data = tcga)
+    
+ 
+```   
+
+---
+ 
+ 
+```{r KMplotcodeagain, echo=FALSE,  fig.width=9, fig.height=4.5}
+   ggsurvplot(kmfit, data = tcga,
+           # Add median survival lines
+           surv.median.line = "hv", 
+           # Change legends: title & labels
+           title= "Overall Survival by smoking status", 
+           xlab ="Years", 
+           legend.title = "",
+           legend.labs = c("Current","Former","Never" ),
+           # Add p-value and CIs
+           pval = TRUE,
+           conf.int = FALSE,
+           # Add risk table
+           risk.table = TRUE,
+           tables.height = 0.25,
+           tables.theme = theme_cleantable(),
+           # Color palettes.
+           palette = c("#F8766D","#00BA38", "#00BFC4"),  
+           # Change ggplot2 theme
+           ggtheme = theme_bw(), 
+           risk.table.title = "Number at risk") 
+ 
+```
+  
+ 
+---
+
+
+```{r KMplotcodefvN, echo=FALSE,  fig.width=9, fig.height=4.5 }    
+
+
+# Smoking 2 levels:  Never vs former ####
+
+tcga2 <- tcga %>% filter(smoking != "Current")
+OS_obj <- survival::Surv(tcga2$OS.time/365, I(tcga2$vital_status=="Dead"))
+#table(tcga2$smoking)
+kmfit <-  survfit(OS_obj ~ smoking, data = tcga2)
+ 
+
+
+
+ggsurvplot(kmfit, data = tcga2,
+           surv.median.line = "hv", # Add medians survival
+           # Change legends: title & labels
+           title= "Overall Survival by smoking status - Former vs Never", 
+           xlab ="Years",
+           legend.title = "",
+           legend.labs = c("Former","Never" ),
+           # Add p-value and CIs
+           pval = TRUE,
+           conf.int = FALSE,
+           # Add risk table
+           risk.table = TRUE,
+           tables.height = 0.25,
+           tables.theme = theme_cleantable(),
+           # Color palettes 
+           palette = c("#00BA38", "#00BFC4"), 
+           ggtheme = theme_bw(), # Change ggplot2 theme
+           risk.table.title = "Number at risk") 
+
+```
+  
+---
+
+
+```{r KMplotcodeCvF, echo=FALSE,  fig.width=9, fig.height=4.5 }    
+# Smoking 2 levels:  CURRENT vs former ####
+
+tcga2 <- tcga %>% filter(smoking != "Never")
+OS_obj <- survival::Surv(tcga2$OS.time/365, I(tcga2$vital_status=="Dead"))
+ kmfit <-  survfit(OS_obj ~ smoking, data = tcga2)
+ 
+
+
+ 
+ggsurvplot(kmfit, data = tcga2,
+           surv.median.line = "hv", # Add medians survival
+           # Change legends: title & labels
+           title= "Overall Survival by smoking status - Current vs Former", 
+           xlab ="Years",
+           legend.title = "",
+           legend.labs = c("Current","Former" ),
+           # Add p-value and CIs
+           pval = TRUE,
+           conf.int = FALSE,
+           # Add risk table
+           risk.table = TRUE,
+           tables.height = 0.25,
+           tables.theme = theme_cleantable(),
+           # Color palettes.  
+           palette = c("#F8766D","#00BA38" ), 
+           ggtheme = theme_bw(), # Change ggplot2 theme
+           risk.table.title = "Number at risk" ) 
+```
+  
+---
+
+
+```{r KMplotcodeCvN, echo=FALSE,  fig.width=9, fig.height=4.5 }    
+ 
+
+# Smoking 2 levels:  Current vs Never ####
+
+tcga2 <- tcga %>% filter(smoking != "Former")
+OS_obj <- survival::Surv(tcga2$OS.time/365, I(tcga2$vital_status=="Dead"))
+ kmfit <-  survfit(OS_obj ~ smoking, data = tcga2)
+ 
+ggsurvplot(kmfit, data = tcga2,
+           surv.median.line = "hv", # Add medians survival
+           # Change legends: title & labels
+           title= "Overall Survival by smoking status - Current vs Never", 
+           xlab ="Years",
+           legend.title = "",
+           legend.labs = c("Current","Never" ),
+           # Add p-value and CIs
+           pval = TRUE,
+           conf.int = FALSE,
+           # Add risk table
+           risk.table = TRUE,
+           tables.height = 0.25,
+           tables.theme = theme_cleantable(),
+           # Color palettes. 
+           palette = c("#F8766D" , "#00BFC4"), 
+           ggtheme = theme_bw(), # Change ggplot2 theme
+           risk.table.title = "Number at risk"
+)# + ggtitle("Overall Survival by smoking status")
+```
+  
+
+
+
+---
+
+
+
+
+
+## Thank you! 
+  
+  - The end
+

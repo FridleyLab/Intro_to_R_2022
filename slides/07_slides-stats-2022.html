@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lea.orange[R]ning about Statistics</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Zachary Thompson" />
+    <meta name="date" content="2022-05-09" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link rel="stylesheet" href="css/moffitt-xaringan.css" type="text/css" />
+    <link rel="stylesheet" href="css/moffitt-xaringan-extra.css" type="text/css" />
+    <link rel="stylesheet" href="css/tachyons.moffitt.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+name: title
+class: left bottom hide-count
+
+&lt;!-- Slide Extras --&gt;
+
+
+
+
+
+
+&lt;!-- Title Slide --&gt;
+&lt;!-- &lt;div class="talk-logo"&gt;&lt;/div&gt; --&gt;
+
+.talk-meta[
+.talk-title[
+# Lea.orange[R]ning about Statistics
+
+Tables, Chi Square and Fisher's exact test, KM curves and log rank tests
+]
+
+.talk-author[
+Zachary Thompson&lt;br&gt;
+.moffitt-gray[Moffitt Cancer Center]
+]
+
+.talk-date.moffitt-gray[
+May 09, 2022
+]
+]
+
+
+&lt;style type="text/css"&gt;
+/* Define title slide image or logo here */
+.talk-logo {
+  width: 400px;
+  height: 750px;
+  position: absolute;
+  top: 6%;
+  right: 7%;
+  /* background-image: url('img/r4ds-cover.png'); */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: contain;
+}
+&lt;/style&gt;
+
+&lt;!-- Moffitt Logo and Slide Border ----
+
+All slides except "title" and "inverse" slides
+have the Moffitt Color Bar and logo.
+
+Additional classes are provided to disable both:
+
+- `class: no-logo` hides the logo
+- `class: no-border` hides the border
+
+or to force either to be shown
+
+- `class: moffitt-slide-logo` shows the logo
+- `class: moffitt-slide-border` shows the border
+--&gt;
+
+---
+
+## What you will learn to run
+ 
+  
+- Review of tables with janitor package
+  
+- Chi Square and Fisher’s Exact test
+
+- Kaplan-Meier Curves and estimates
+
+- Log rank tests
+
+
+---
+
+## Review of tables
+ 
+
+
+```r
+janitor::tabyl(tcga, radiation_therapy, vital_status )
+```
+
+```
+ radiation_therapy Alive Dead
+                NO   217   84
+               YES   190   95
+              &lt;NA&gt;   243  214
+```
+ 
+ 
+---
+
+## Review of tables
+ 
+
+
+```r
+janitor::tabyl(tcga, radiation_therapy, vital_status, 
+               show_na = FALSE )
+```
+
+```
+ radiation_therapy Alive Dead
+                NO   217   84
+               YES   190   95
+```
+
+---
+
+## Review of tables
+
+```r
+tcga %&gt;% 
+  tabyl(smoking, gender, show_na = FALSE )
+```
+
+```
+ smoking FEMALE MALE
+ Current     40  151
+  Former     54  180
+   Never     72   88
+```
+
+
+---
+
+## Review of tables
+
+```r
+tcga %&gt;% 
+  tabyl(smoking, gender, show_na = FALSE ) %&gt;% 
+  adorn_totals(where = c("row","col"))
+```
+
+```
+ smoking FEMALE MALE Total
+ Current     40  151   191
+  Former     54  180   234
+   Never     72   88   160
+   Total    166  419   585
+```
+
+---
+
+## Review of tables
+
+```r
+tcga %&gt;% 
+  tabyl(smoking, gender, show_na = FALSE ) %&gt;% 
+  adorn_totals(where = c("row","col")) %&gt;% 
+  adorn_percentages(denominator = "col") 
+```
+
+```
+ smoking    FEMALE      MALE     Total
+ Current 0.2409639 0.3603819 0.3264957
+  Former 0.3253012 0.4295943 0.4000000
+   Never 0.4337349 0.2100239 0.2735043
+   Total 1.0000000 1.0000000 1.0000000
+```
+
+---
+
+## Review of tables
+
+```r
+tcga %&gt;% 
+  tabyl(smoking, gender, show_na = FALSE ) %&gt;% 
+  adorn_totals(where = c("row","col")) %&gt;% 
+  adorn_percentages(denominator = "col") %&gt;% 
+  adorn_pct_formatting(digits = 0)  
+```
+
+```
+ smoking FEMALE MALE Total
+ Current    24%  36%   33%
+  Former    33%  43%   40%
+   Never    43%  21%   27%
+   Total   100% 100%  100%
+```
+
+---
+
+## Review of tables
+
+```r
+tcga %&gt;% 
+  tabyl(smoking, gender, show_na = FALSE ) %&gt;% 
+  adorn_totals(where = c("row","col")) %&gt;% 
+  adorn_percentages(denominator = "col") %&gt;% 
+  adorn_pct_formatting(digits = 0) %&gt;% 
+  adorn_ns(position = "front") 
+```
+
+```
+ smoking     FEMALE       MALE      Total
+ Current  40  (24%) 151  (36%) 191  (33%)
+  Former  54  (33%) 180  (43%) 234  (40%)
+   Never  72  (43%)  88  (21%) 160  (27%)
+   Total 166 (100%) 419 (100%) 585 (100%)
+```
+
+ 
+ 
+---
+
+
+# Pearson’s chi-squared test
+ 
+The chi squared test is a non-parametric test that can be applied to contingency tables with various dimensions. The name of the test originates from the chi-squared distribution, which is the distribution for the squares of independent standard normal variables. This is the distribution of the test statistic of the chi squared test, which is defined by the sum of chi-square values for all cells arising from the difference between a cell’s observed value and the expected value, normalized by the expected value.
+ 
+`\(\chi ^{2}\)` = `\(\sum_{ij}\)` `\(\frac{(O_{ij} - E_{ij})^{2}}{E_{ij}}\)` 
+
+
+*   `\(\chi ^{2}\)` = chi square statistic
+*   `\(O_{ij}\)` = observed value
+*   `\(E_{ij}\)` = expected value
+
+
+---
+## Pearson’s chi-squared test
+ 
+The null hypothesis of the Chi-Square test is that no relationship exists between the categorical variables in the population; they are independent.
+
+ 
+
+```
+ smoking     FEMALE       MALE      Total
+ Current  40  (24%) 151  (36%) 191  (33%)
+  Former  54  (33%) 180  (43%) 234  (40%)
+   Never  72  (43%)  88  (21%) 160  (27%)
+   Total 166 (100%) 419 (100%) 585 (100%)
+```
+ 
+
+
+---
+
+## Pearson’s chi-squared test
+ 
+The null hypothesis of the Chi-Square test is that no relationship exists between the categorical variables in the population; they are independent.
+
+ 
+
+
+```r
+tcga %&gt;% tabyl( smoking, gender , show_na = FALSE ) %&gt;%
+  chisq.test()
+```
+
+```
+
+	Pearson's Chi-squared test
+
+data:  .
+X-squared = 30.182, df = 2, p-value = 0.0000002793
+```
+ 
+The p-value is very low so we reject the null hypothesis that there is no association between the variables. 
+
+---
+
+## Pearson’s chi-squared test
+ 
+  More women are never smokers and more men are current smokers. 
+ 
+.panelset[
+.panel[.panel-name[R Code]
+
+
+```r
+ggplot(tcga %&gt;% filter(!is.na(smoking)),
+       aes(x = gender, fill = smoking )) +  
+  geom_bar(position = "fill") +
+  labs(y = "proportion")
+```
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="07_slides-stats-2022_files/figure-html/unnamed-chunk-9-1.png" width="100%" /&gt;
+]
+]
+ 
+
+
+---
+
+# Fisher’s Exact test
+ 
+Similar to Chi square test. Use the Fisher's exact test of independence when you have two nominal variables and you want to see whether the proportions of one variable are different depending on the value of the other variable. Use it when the sample size is small.
+
+
+How the test works:
+
+Unlike most statistical tests, Fisher's exact test does not use a mathematical function that estimates the probability of a value of a test statistic; instead, you calculate the probability of getting the observed data, and all data sets with more extreme deviations, under the null hypothesis that the proportions are the same. 
+
+
+---
+
+## Fisher’s Exact test
+ 
+
+
+```r
+tcga &lt;- tcga  %&gt;% mutate(Death = ifelse(vital_status == "Dead"," Yes","No"))
+
+tcga %&gt;% filter(race %in% c("ASIAN")) %&gt;% 
+  tabyl(gender, Death, show_na = TRUE) %&gt;% 
+  adorn_totals(where = c("row","col")) %&gt;% 
+  adorn_percentages(denominator = "row") %&gt;% 
+  adorn_pct_formatting(digits = 0) %&gt;% 
+  adorn_ns(position = "front") 
+```
+
+```
+ gender     Yes       No     Total
+ FEMALE 2 (25%)  6 (75%)  8 (100%)
+   MALE 3 (27%)  8 (73%) 11 (100%)
+  Total 5 (26%) 14 (74%) 19 (100%)
+```
+
+---
+
+## Fisher’s Exact test
+  
+The null hypothesis is that the relative proportions of one variable are independent of the second variable. For 2 by 2 tables, the null of conditional independence is equivalent to the hypothesis that the odds ratio equals one. 
+
+
+
+```r
+tcga %&gt;% filter(race %in% c("ASIAN")) %&gt;% 
+  tabyl(gender, Death, show_na = TRUE) %&gt;% fisher.test() 
+```
+
+```
+
+	Fisher's Exact Test for Count Data
+
+data:  .
+p-value = 1
+alternative hypothesis: true odds ratio is not equal to 1
+95 percent confidence interval:
+  0.05723439 10.70637705
+sample estimates:
+odds ratio 
+ 0.8943933 
+```
+ 
+
+ 
+---
+
+## Fisher's Exact test
+   
+ 
+.panelset[
+.panel[.panel-name[R Code]
+
+
+```r
+ggplot(tcga %&gt;% filter(race %in% c("ASIAN" )),
+       aes(x = gender, fill = Death )) +  
+  geom_bar(position = "fill") +
+  labs(y = "proportion")
+```
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="07_slides-stats-2022_files/figure-html/unnamed-chunk-10-1.png" width="100%" /&gt;
+]
+]
+ 
+
+ 
+ 
+---
+ 
+# Kaplan-Meier Curves and estimates
+ 
+The Kaplan–Meier estimator,also known as the product limit estimator, is a non-parametric statistic used to estimate the survival function from time to event data. In medical research, it is often used to measure the fraction of patients living for a certain amount of time after treatment. In other fields, Kaplan–Meier estimators may be used to measure the time-to-failure of machine parts.
+
+
+ 
+---
+
+## Kaplan-Meier Curves and estimates
+ 
+ 
+
+A plot of the Kaplan–Meier estimator is a series of declining horizontal steps which, with a large enough sample size, approaches the true survival function for that population. The value of the survival function between successive distinct sampled observations ("clicks") is assumed to be constant.
+
+An important advantage of the Kaplan–Meier curve is that the method can take into account some types of censored data, particularly right-censoring, which occurs if a patient withdraws from a study, is lost to follow-up, or is alive without event occurrence at last follow-up. On the plot, small vertical tick-marks state individual patients whose survival times have been right-censored. When no truncation or censoring occurs, the Kaplan–Meier curve is the complement of the empirical distribution function.
+
+---
+
+## Kaplan-Meier Curves and estimates
+ 
+The estimator of the survival function: 
+ 
+`\(\hat{S}(t)\)` = `\(\prod_{i:t_{i}&lt;t}\)` `\((1-\frac{d_{i}}{n_{i}})\)` 
+
+*   `\(\hat{S}(t)\)` = probability survival is longer than `\(t\)` 
+*   `\(d_{i}\)` = number of deaths (events) that happened at time `\(t_{i}\)` 
+*   `\(n_{i}\)` = number of individuals that have survived to time `\(t_{i}\)`
+
+---
+ 
+## Kaplan-Meier Curves 
+ 
+ 
+.panelset[
+.panel[.panel-name[R Code]
+
+
+```r
+ OS_obj &lt;- survival::Surv(tcga$OS.time/365, I(tcga$vital_status=="Dead")) 
+ kmfit &lt;-  survfit(OS_obj ~ smoking, data = tcga)
+```
+]
+
+.panel[.panel-name[R Result]
+
+
+```r
+ kmfit 
+```
+
+```
+Call: survfit(formula = OS_obj ~ smoking, data = tcga)
+
+   459 observations deleted due to missingness 
+                  n events median 0.95LCL 0.95UCL
+smoking=Current 190     82   4.02    2.68    5.65
+smoking=Former  234     92   6.63    5.40    9.74
+smoking=Never   160     49   9.90    5.71      NA
+```
+]
+
+
+]
+
+ 
+---
+ 
+ 
+
+```r
+p &lt;-  ggsurvplot(kmfit, data = tcga,
+           # Add median survival lines
+           surv.median.line = "hv", 
+           # Change legends: title &amp; labels
+           title= "Overall Survival by smoking status", 
+           xlab ="Years", 
+           legend.title = "",
+           legend.labs = c("Current","Former","Never" ),
+           # Add p-value and CIs
+           pval = FALSE,
+           conf.int = FALSE,
+           # Add risk table
+           risk.table = TRUE,
+           tables.height = 0.2,
+           tables.theme = theme_cleantable(),
+           # Color palettes.
+           palette = c("#F8766D","#00BA38", "#00BFC4"),  
+           # Change ggplot2 theme
+           ggtheme = theme_bw(), 
+           risk.table.title = "Number at risk") 
+```
+  
+---
+ 
+ 
+&lt;img src="07_slides-stats-2022_files/figure-html/KMplotdisplay -1.png" width="100%" /&gt;
+
+---
+ 
+# Log rank test
+  
+The log rank test is a hypothesis test to compare the survival distributions of two or more samples. It is a nonparametric test and appropriate to use when the data are right skewed and censored. It is widely used in clinical trials to establish the efficacy of a new treatment in comparison with a control treatment when the measurement is the time to event (such as the time from initial treatment to a heart attack). The test is sometimes called the Mantel–Cox test, named after Nathan Mantel and David Cox. The logrank test can also be viewed as a time-stratified Cochran–Mantel–Haenszel test.
+  
+ 
+---
+ 
+ 
+ 
+# Log rank test R code
+ 
+
+```r
+survdiff(OS_obj ~ smoking, data = tcga)
+```
+
+```
+Call:
+survdiff(formula = OS_obj ~ smoking, data = tcga)
+
+n=584, 459 observations deleted due to missingness.
+
+                  N Observed Expected (O-E)^2/E (O-E)^2/V
+smoking=Current 190       82     61.3     7.017     9.945
+smoking=Former  234       92     98.6     0.444     0.823
+smoking=Never   160       49     63.1     3.157     4.463
+
+ Chisq= 10.8  on 2 degrees of freedom, p= 0.004 
+```
+
+---
+ 
+ 
+&lt;img src="07_slides-stats-2022_files/figure-html/KMplotcodeagain-1.png" width="100%" /&gt;
+  
+ 
+---
+
+
+&lt;img src="07_slides-stats-2022_files/figure-html/KMplotcodefvN-1.png" width="100%" /&gt;
+  
+---
+
+
+&lt;img src="07_slides-stats-2022_files/figure-html/KMplotcodeCvF-1.png" width="100%" /&gt;
+  
+---
+
+
+&lt;img src="07_slides-stats-2022_files/figure-html/KMplotcodeCvN-1.png" width="100%" /&gt;
+  
+
+
+
+---
+
+
+
+
+
+## Thank you! 
+  
+  - The end
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-0.14.0.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "atom-one-light",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
