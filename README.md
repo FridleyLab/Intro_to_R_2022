@@ -11,7 +11,7 @@
 
 :alarm\_clock: 3-4 pm
 
-:office: via Zoom (link coming soon)
+:office: via [Zoom](https://moffitt.zoom.us/j/99031977384)
 
 :computer: [Moffitt](https://moffitt.org/)
 
@@ -19,14 +19,21 @@
 
 ## Setup
 
-The course will be hosted through ….
+The course will be hosted through Zoom with video recordings posted on
+Ponopto after. Links to recorded lectures will be emailed out after
+class.
 
 <!-- 
 * When you're done, put a green post-it on your computer. 
 * If you need help, put up a pink post-it.
 -->
 
-## Slides
+## Course material
+
+All slides will be made available the day of the lecture with any
+live-coding notes posted after the lecture. All data used through out
+the course will be made available in the data folder. Quizzes can be
+found in the class Moodle.
 
 <!--
 * Rewrite as links to slides on github once they are made
@@ -39,7 +46,7 @@ Feel free to ask questions in the [GitHub Issues](https://github.com).
 
 ## Overview
 
-This is a X week course designed to introduce future users to R and
+This is an 8 week course designed to introduce future users to R and
 Rstudio. We will cover data cleaning using the `tidyverse`, creating
 visuals with `ggplot`, basic statistical analysis and writing documents
 with `Rmarkdown`. In the end you should be able to:
@@ -61,28 +68,6 @@ Have you never written any code in R or any other programming language?
 Are you familiar with R, but hoping to bulk up your basic skills? Have
 you used R but are new to the `tidyverse` framework?
 
-## Learning objectives
-
-Introduction to R/Rstudio
-
--   Get familiar with the R and Rstudio environment
--   Understand basic R code structure (packages, data structures)
-
-Data import and manipulation - Part I
-
--   Import various data types
--   Explain the fundamentals of “tidy data” and the `tidyverse`
--   Clean data sets using `dplyr` verbs
-
-Data manipulation and cleaning - Part II
-
--   Merge data sets
--   Transform data
-
-Visualization
-
-Basic statistics
-
 ## Materials
 
 Materials will be made available on
@@ -92,12 +77,13 @@ before you arrive that you can access GitHub.
 
 ## Schedule and Links
 
--   June XX - Basics of R/RStudio
--   June XX - Data import and wrangling part I
--   June XX - Data import and wrangling part II
--   June XX - Visualizations with `ggplot2`
--   July XX - Basic statistics
--   July XX - `rmarkdown`
+-   June 01 - Basics of R/RStudio
+-   June 08 - Data import and wrangling part I
+-   June 15 - Data import and wrangling part II
+-   June 22 - Visualizations with `ggplot2`
+-   June 29 - Statistics part I
+-   July 06 - Statistics part II
+-   July 13 - `rmarkdown`
 
 ## Instructors
 
