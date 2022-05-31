@@ -110,6 +110,7 @@ or to force either to be shown
 *   Installing R and RStudio
 *   Basics of programming 
 *   GitHub
+*   Best coding practices (if we have time)
 
 ---
 class: inverse center middle
