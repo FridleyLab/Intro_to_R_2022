@@ -1,5 +1,5 @@
 ---
-title: "Data wrangling"
+title: "Data wrangling: Part I"
 subtitle: "Importing and data cleaning"
 author: 
   - Jordan Creed
@@ -103,6 +103,19 @@ or to force either to be shown
 - `class: moffitt-slide-logo` shows the logo
 - `class: moffitt-slide-border` shows the border
 -->
+
+---
+## What we are going to cover
+
+*   Elements of tidy data 
+*   TCGA data
+*   Importing data
+*   Data cleaning with `dplyr`
+
+---
+class: inverse center middle
+
+# What is "tidy" data?
 
 ---
 ## Elements of "tidy" data 
@@ -225,6 +238,8 @@ Operations can be chained together with the pipe operator (`%>%`)
 `n_distinct()` the number of unique values for a variable
 
 `group_by()` collects observations by a common value
+
+`%>%` pipe used to join commands together
 
 ---
 

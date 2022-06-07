@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Data wrangling</title>
+    <title>Data wrangling: Part I</title>
     <meta charset="utf-8" />
     <meta name="author" content="Jordan Creed" />
     <meta name="date" content="2022-06-08" />
@@ -30,7 +30,7 @@ class: left bottom hide-count
 
 .talk-meta[
 .talk-title[
-# Data wrangling
+# Data wrangling: Part I
 
 Importing and data cleaning
 ]
@@ -76,6 +76,19 @@ or to force either to be shown
 - `class: moffitt-slide-logo` shows the logo
 - `class: moffitt-slide-border` shows the border
 --&gt;
+
+---
+## What we are going to cover
+
+*   Elements of tidy data 
+*   TCGA data
+*   Importing data
+*   Data cleaning with `dplyr`
+
+---
+class: inverse center middle
+
+# What is "tidy" data?
 
 ---
 ## Elements of "tidy" data 
@@ -130,7 +143,7 @@ class: inverse center middle
 *   R data files : `load()`
 *   SAS data files: `haven::read_sas()`
 
-👩‍💻 remember to copy code from the import gui to your scripts!
+👨‍💻 remember to copy code from the import gui to your scripts!
 
 ---
 
@@ -198,6 +211,8 @@ Operations can be chained together with the pipe operator (`%&gt;%`)
 `n_distinct()` the number of unique values for a variable
 
 `group_by()` collects observations by a common value
+
+`%&gt;%` pipe used to join commands together
 
 ---
 
