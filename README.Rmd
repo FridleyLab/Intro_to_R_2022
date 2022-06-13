@@ -18,7 +18,7 @@ Introduction to R
 
 -----
 
-:calendar: Wednesday June X - July X, 2022
+:calendar: Wednesday June 01 - July 20, 2022
 
 :alarm_clock: 3-4 pm
 
@@ -88,8 +88,8 @@ arrive that you can access GitHub.
 
 ## Schedule and Links
 
-*   June 01 - Basics of R/RStudio
-*   June 08 - Data import and wrangling part I
+*   June 01 - [Basics of R/RStudio](https://moffitt.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=ef316a92-1a87-4ae8-a788-aea70150dd19)
+*   June 08 - [Data import and wrangling part I](https://moffitt.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=d525ac17-661c-44f4-9ad3-aeae0153744a)
 *   June 15 - Data import and wrangling part II
 *   June 22 - Visualizations with `ggplot2`
 *   June 29 - Statistics part I
