@@ -90,7 +90,7 @@ arrive that you can access GitHub.
 
 *   June 01 - [Basics of R/RStudio](https://moffitt.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=ef316a92-1a87-4ae8-a788-aea70150dd19)
 *   June 08 - [Data import and wrangling part I](https://moffitt.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=d525ac17-661c-44f4-9ad3-aeae0153744a)
-*   June 15 - Data import and wrangling part II
+*   June 15 - [Data wrangling part II](https://moffitt.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=c9dcb86c-d5fe-4662-bfbf-aeb5014a74bb)
 *   June 22 - Visualizations with `ggplot2`
 *   June 29 - Statistics part I
 *   July 06 - Statistics part II
