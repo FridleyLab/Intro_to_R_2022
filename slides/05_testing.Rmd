@@ -569,3 +569,8 @@ pairwise.wilcox.test(
 ```
 
 Benjamini & Hochberg (also known as FDR) method is used for multiple correction
+
+---
+## Useful resource
+
+[rstatix](https://rpkgs.datanovia.com/rstatix/index.html) R package that provides a simple and intuitive pipe-friendly framework, coherent with the ‘tidyverse’ design philosophy, for performing basic statistical tests, including t-test, Wilcoxon test, ANOVA, Kruskal-Wallis and correlation analyses. 
