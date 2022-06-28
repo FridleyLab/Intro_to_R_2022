@@ -93,7 +93,6 @@ mean_age_kps_line <- mean_age_kps %>%
 mean_age_kps_line
 ```
 
-
 ## Visualizing amounts
 
 We might be interested in visualizing amounts i.e. numerical values for some set of categories
@@ -176,7 +175,6 @@ boxplot_gender <- ggplot(
 boxplot_gender
 ```
 
-
 ### histogram and density plot
 
 Histogram count plot for single distribution
@@ -247,10 +245,9 @@ wt_heatmap <- ggplot(tcga_clinical, aes(x = stage, y = tumor_tissue_site, fill =
 wt_heatmap
 ```
 
-
 ## Combining plots
 
-`{patchwork}` R package has made combining multiple plots ridiculuous simple
+`{patchwork}` R package has made combining multiple plots ridiculously simple
 
 ### Horizontal layout
 
@@ -276,7 +273,7 @@ nested_patch <- mean_age_kps_line / (wt_ht_scatter | hist_age)
 nested_patch
 ```
 
-Be careful with the operator precedence rule (e.g. / is evaluated before |)
+Be careful with the operator precedence rule (e.g. / is evaluated before \|)
 
 `{patchwork}` provides `wrap_plots()` for a more functional approach to assembly
 
@@ -289,7 +286,7 @@ Be careful with the operator precedence rule (e.g. / is evaluated before |)
     subtitle = "Annotating each plot",
     caption = "Data source: TCGA data",
     tag_levels = "A", tag_suffix = ".")
-```   
+```
 
 ### Modifying patches
 
