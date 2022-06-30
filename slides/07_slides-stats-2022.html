@@ -4,7 +4,7 @@
     <title>Lea.orange[R]ning about Statistics</title>
     <meta charset="utf-8" />
     <meta name="author" content="Zachary Thompson" />
-    <meta name="date" content="2022-05-09" />
+    <meta name="date" content="2022-05-23" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
     <script src="libs/tile-view/tile-view.js"></script>
@@ -46,7 +46,7 @@ Zachary Thompson&lt;br&gt;
 ]
 
 .talk-date.moffitt-gray[
-May 09, 2022
+May 23, 2022
 ]
 ]
 
@@ -405,7 +405,7 @@ ggplot(tcga %&gt;% filter(race %in% c("ASIAN" )),
  
 # Kaplan-Meier Curves and estimates
  
-The Kaplan–Meier estimator,also known as the product limit estimator, is a non-parametric statistic used to estimate the survival function from time to event data. In medical research, it is often used to measure the fraction of patients living for a certain amount of time after treatment. In other fields, Kaplan–Meier estimators may be used to measure the time-to-failure of machine parts.
+The Kaplan–Meier estimator, also known as the product limit estimator, is a non-parametric statistic used to estimate the survival function from time to event data. In medical research, it is often used to measure the fraction of patients living for a certain amount of time after treatment. In other fields, Kaplan–Meier estimators may be used to measure the time-to-failure of machine parts.
 
 
  
@@ -504,9 +504,48 @@ p &lt;-  ggsurvplot(kmfit, data = tcga,
  
 # Log rank test
   
-The log rank test is a hypothesis test to compare the survival distributions of two or more samples. It is a nonparametric test and appropriate to use when the data are right skewed and censored. It is widely used in clinical trials to establish the efficacy of a new treatment in comparison with a control treatment when the measurement is the time to event (such as the time from initial treatment to a heart attack). The test is sometimes called the Mantel–Cox test, named after Nathan Mantel and David Cox. The logrank test can also be viewed as a time-stratified Cochran–Mantel–Haenszel test.
+The log rank test is a hypothesis test to compare the survival distributions of two or more samples. It is a nonparametric test and appropriate to use when the data are right skewed and censored. It is widely used in clinical trials to establish the efficacy of a new treatment in comparison with a control treatment when the measurement is the time to event (such as the time from initial treatment to a heart attack)
+
+The test is sometimes called the Mantel–Cox test, named after Nathan Mantel and David Cox. 
+
+The logrank test can also be viewed as a time-stratified Cochran–Mantel–Haenszel test.
   
+
+---
  
+# Log rank test
+
+The logrank test is used to test the null hypothesis that there is no 
+difference between the populations in the probability of an event 
+(here a death) at any time point. The analysis is based on the times 
+of events (here deaths). For each such time we calculate the observed
+number of deaths in each group and the number expected if there were 
+in reality no difference between the groups.
+
+
+
+We can now use a `\(\chi ^{2}\)` test of the null hypothesis. The test statistic is 
+the sum of `\(\sum_{it}\)` `\(\frac{(O_{it} - E_{it})^{2}}{E_{it}}\)` for each group, where O and E are the totals of
+ the observed and expected events at the time of each event. 
+  
+  
+---
+ 
+# Log rank test
+  
+  The logrank test is based on the same assumptions as the Kaplan Meier 
+survival curve, namely, that censoring is unrelated to prognosis, the 
+survival probabilities are the same for subjects recruited early and late 
+in the study, and the events happened at the times specified. Deviations 
+from these assumptions matter most if they are satisfied differently in 
+the groups being compared, for example if censoring is more likely in one 
+group than another.
+
+Because the logrank test is purely a test of significance it cannot 
+provide an estimate of the size of the difference between the groups 
+or a confidence interval. 
+  
+  
 ---
  
  
@@ -550,11 +589,13 @@ smoking=Never   160       49     63.1     3.157     4.463
   
 ---
 
-
 &lt;img src="07_slides-stats-2022_files/figure-html/KMplotcodeCvN-1.png" width="100%" /&gt;
   
 
+---
 
+&lt;img src="07_slides-stats-2022_files/figure-html/KMplotcodeCvNcb-1.png" width="100%" /&gt;
+  
 
 ---
 

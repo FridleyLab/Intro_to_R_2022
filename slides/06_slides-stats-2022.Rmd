@@ -45,14 +45,18 @@ options(width = 70)
   library(janitor)
   library(gridExtra)
   library(broom)
+  library(here)
    
 
    
-# MERGE and making smoking variable 
-clinical <- read.csv(file = "F:\\myGitRepo\\Introduction-to-R\\data\\tcga-clinical.csv", header = TRUE)
-geneexp <- read.csv(file = "F:\\myGitRepo\\Introduction-to-R\\data\\tcga-gene-exp.csv", header = TRUE)
-
- 
+# # MERGE and making smoking variable 
+  clinical <- read.csv(file = "F:\\myGitRepo\\Introduction-to-R\\data\\tcga-clinical.csv", header = TRUE)
+  geneexp <- read.csv(file = "F:\\myGitRepo\\Introduction-to-R\\data\\tcga-gene-exp.csv", header = TRUE)
+  clinical2 <- read_csv(file = "F:\\myGitRepo\\Intro_to_R_2022\\data\\tcga_clinical.txt" ) 
+# clinical <- read_csv(file = "F:\\myGitRepo\\Intro_to_R_2022\\data\\tcga_clinical.txt" )
+# geneexp <- read_csv(file = "F:\\myGitRepo\\Intro_to_R_2022\\data\\tcga_gene_exp.txt" )
+# 
+#  
 # intersect(names(clinical), names(geneexp))
  
 # dim(clinical)
@@ -167,7 +171,90 @@ or to force either to be shown
 
 - MultivarIABLE reression
 
+
+---
  
+## Data prep: Load
+ 
+
+```{r comment=NA}
+# clinical <- read.csv(file = "F:\\myGitRepo\\Intro_to_R_2022\\data\\tcga_clinical.txt",
+#                      header = TRUE)
+# geneexp <- read.csv(file = "F:\\myGitRepo\\Intro_to_R_2022\\data\\tcga_gene_exp.txt", 
+#                     header = TRUE)
+#  
+
+ here("data","tcga-clinical.txt")
+ here("data","tcga-gene-exp.txt")
+
+```
+
+---
+ 
+## Data prep: Load
+ 
+
+```{r comment=NA}
+
+ 
+# clinical <- read.csv(file = here("data","tcga-clinical.csv"),
+#                      header = TRUE)
+# geneexp <- read.csv(file = here("data","tcga-clinical.csv"), 
+#                     header = TRUE)
+  
+```
+
+
+
+
+
+---
+ 
+## Data prep: merge
+ 
+
+```{r comment=NA}
+ 
+  tcgatest <- left_join(clinical, geneexp)
+  tcga <- left_join(clinical, geneexp, by = "bcr_patient_barcode")
+
+    intersect(names(clinical), names(geneexp))
+     dim(tcgatest)
+     dim(tcga)
+
+ 
+```
+
+
+
+---
+
+
+
+## Data prep: mutate
+ 
+
+```{r comment=NA}
+ 
+  tcga <- tcga %>% mutate(
+  smoking = tobacco_smoking_history,
+  smoking = case_when(
+    tobacco_smoking_history %in% c(
+      "Current reformed smoker for < or = 15 years",
+      "Current reformed smoker for > 15 years",
+      "Current Reformed Smoker, Duration Not Specified"
+    ) ~ "Former",
+    tobacco_smoking_history %in% c("Current smoker") ~ "Current",
+    tobacco_smoking_history %in% c("Lifelong Non-smoker") ~ "Never",
+    is.na(tobacco_smoking_history) ~ NA_character_
+  )
+)
+```
+
+
+
+
+
  
 ---
 
@@ -244,8 +331,97 @@ ggplot(tcga %>% filter(!is.na(smoking))) +
 ]
 ]
  
+---
+
+## Scatter plots 
+
+  
+
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r geomsmoking2, echo = TRUE, fig.show = "hide"}
+ggplot(tcga %>% filter(!is.na(smoking))) + 
+  aes(DUOXA1_exp, DUOX1_exp) + 
+  geom_point(aes(shape = smoking, colour = gender)) 
+
+```
+]
+
+.panel[.panel-name[Plot]
+
+```{r ref.label = "geomsmoking2", echo = FALSE}
+```
+]
+]
+ 
+---
+
+## Scatter plots 
+
+  
+
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r geomsmoking3, echo = TRUE, fig.show = "hide"}
+ggplot(tcga %>% filter(!is.na(smoking))) + 
+  aes(DUOXA1_exp, DUOX1_exp) + 
+  geom_point(aes(shape = smoking, colour = gender))  + 
+  scale_color_brewer(palette="Dark2") + 
+  theme_minimal()
+
+```
+]
+
+.panel[.panel-name[Plot]
+
+```{r ref.label = "geomsmoking3", echo = FALSE}
+```
+]
+]
  
  
+---
+
+## Scatter plots 
+
+  
+
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r geomsmoking4, echo = TRUE, fig.show = "hide"}
+ggplot(tcga %>% filter(!is.na(smoking))) + 
+  aes(DUOXA1_exp, DUOX1_exp) + 
+  geom_point(aes(shape = smoking, colour = gender))  + 
+  scale_color_brewer(palette="Spectral") + 
+  theme_dark()
+
+```
+]
+
+.panel[.panel-name[Plot]
+
+```{r ref.label = "geomsmoking4", echo = FALSE}
+```
+]
+]
+  
+
+---
+
+## Getting help 
+
+- In R console 
+
+> library(ggplot2)
+
+> ?scale_color_brewer
+ 
+> ?theme
+
+
 ---
 
 ## Scatter plots 
@@ -275,7 +451,97 @@ ggplot(tcga) +
  
 
 
+---
 
+## Scatter plots 
+
+  
+
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r geom0size1, echo = TRUE, fig.show = "hide"}
+
+
+
+ggplot(tcga) + 
+  aes(DUOXA1_exp, DUOX1_exp) + 
+  geom_point(aes(size = stage,colour = weight))   + 
+  scale_color_distiller(palette="Oranges") + 
+  theme_dark()
+
+```
+]
+
+.panel[.panel-name[Plot]
+
+```{r ref.label = "geom0size1", echo = FALSE}
+```
+]
+]
+ 
+
+
+
+ 
+---
+
+## Scatter plots 
+
+  
+
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r geom0size2, echo = TRUE, fig.show = "hide"}
+
+
+
+ggplot(tcga) + 
+  aes(DUOXA1_exp, DUOX1_exp) + 
+  geom_point(aes(size = stage,colour = weight, shape = gender)) 
+
+```
+]
+
+.panel[.panel-name[Plot]
+
+```{r ref.label = "geom0size2", echo = FALSE}
+```
+]
+]
+ 
+
+
+ 
+---
+
+## Scatter plots 
+
+  
+
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r geom0size3, echo = TRUE, fig.show = "hide"}
+
+
+
+ggplot(tcga) + 
+  aes(DUOXA1_exp, DUOX1_exp) + 
+  geom_point(aes(size = stage,colour = weight, 
+                 shape = gender, alpha = .5)) 
+
+```
+]
+
+.panel[.panel-name[Plot]
+
+```{r ref.label = "geom0size3", echo = FALSE}
+```
+]
+]
+ 
 
  
 
@@ -387,33 +653,6 @@ ggplot(tcga) +
 
 
 
----
-
-## Pearson Correlation Scatter Plot
-  
-.panelset[
-.panel[.panel-name[R Code]
-
-```{r geom2, echo = TRUE, fig.show = "hide"}
-
-ggplot(tcga) + 
-  aes(BUB1_exp, C10orf32_exp) + 
-  geom_point() + 
-  annotate(geom = "text", x = 1000, y = 4000, 
-           label = paste("r = ", round(r2$r, 2), sep = ""),
-           color = "red")
- 
-
-```
-]
-
-.panel[.panel-name[Plot]
-
-```{r ref.label = "geom2", echo = FALSE}
-```
-]
-]
-
  
 
 ---
@@ -492,6 +731,26 @@ ggplot(pdata, aes(x,y)) + geom_point()
 
 ```
 
+---
+
+
+
+## Example of monotonic relationship
+
+
+ 
+```{r echo=FALSE, comment=NA}
+ 
+
+x2 <- x <- seq(10,20,.25)
+y2 <- (x-15)^3 + 100
+pdata <-  data.frame(x=x2,y=y2) 
+ggplot(pdata, aes(x,y)) + geom_point() 
+ 
+
+```
+
+
 
 ---
 
@@ -541,6 +800,35 @@ r3 <- tcga %>% correlation::cor_test("BRAF_exp",
 
 
 
+
+---
+
+## Spearman Correlation Scatter Plot
+  
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r geom2, echo = TRUE, fig.show = "hide"}
+
+ggplot(tcga) + 
+  aes(BUB1_exp, C10orf32_exp) + 
+  geom_point() + 
+  annotate(geom = "text", x = 1000, y = 4000, 
+           label = paste("r = ", round(r2$r, 2), sep = ""),
+           color = "red")
+ 
+
+```
+]
+
+.panel[.panel-name[Plot]
+
+```{r ref.label = "geom2", echo = FALSE}
+```
+]
+]
+
+
 ---
 
 ## Correllation Matrix 
@@ -577,7 +865,7 @@ tcga %>%
 $Y_{i}$ = $\beta_{0}$ + $\beta_{1}$ $X_{1}$ + $\epsilon_{i}$ where $\epsilon_{i}$ ~ $N(0, \sigma^{2})$
 
 - $X_{1}$ is the predictor or independent variable.
-- $\beta_{0}$ is the intercept and $\beta_{1}$ is the vector of parameters
+- $\beta_{0}$ is the intercept and $\beta_{1}$ is the slope
 - $\epsilon$ is the error vector (residuals)
 - $Y_{i}$ is the response vector or dependent variable
 
@@ -616,33 +904,39 @@ $Y_{i}$ = $\beta_{0}$ + $\beta_{1}$ $X_{1}$ + $\epsilon_{i}$ where $\epsilon_{i}
 ```{r comment=NA}
 
 summary( lmfit <-  lm(DUOX1_exp ~ DUOXA1_exp, data = tcga) )
-
+ 
 ```
- 
 
- 
+
 ---
 
-##  Regression plots 
-  
-.panelset[
-.panel[.panel-name[R Code]
 
-```{r regplots, echo = TRUE, fig.show = "hide"}
-  par(mfrow=c(1,2))
-  plot(lmfit, which=1:2)
+##  Simple linear regression 
+ 
+
+```{r comment=NA}
+
+names( lmfit )
+names( summary(lmfit) )
  
 ```
-]
-
-.panel[.panel-name[Plot]
-
-```{r ref.label = "regplots", echo = FALSE}
-```
-]
-]
-
  
+
+
+---
+
+
+##  Simple linear regression:  residual variance
+ 
+
+```{r comment=NA} 
+ 
+ summary(lmfit)$sigma
+ (summary(lmfit)$sigma)**2 
+```
+ 
+ 
+
 
 
 

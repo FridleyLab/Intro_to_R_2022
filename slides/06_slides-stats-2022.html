@@ -4,7 +4,7 @@
     <title>Lea.orange[R]ning about Statistics - YEAH!!!</title>
     <meta charset="utf-8" />
     <meta name="author" content="Zachary Thompson" />
-    <meta name="date" content="2022-05-09" />
+    <meta name="date" content="2022-06-30" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
     <script src="libs/tile-view/tile-view.js"></script>
@@ -48,7 +48,7 @@ Zachary Thompson&lt;br&gt;
 ]
 
 .talk-date.moffitt-gray[
-May 09, 2022
+June 30, 2022
 ]
 ]
 
@@ -97,7 +97,115 @@ or to force either to be shown
 
 - MultivarIABLE reression
 
+
+---
  
+## Data prep: Load
+ 
+
+
+```r
+# clinical &lt;- read.csv(file = "F:\\myGitRepo\\Intro_to_R_2022\\data\\tcga_clinical.txt",
+#                      header = TRUE)
+# geneexp &lt;- read.csv(file = "F:\\myGitRepo\\Intro_to_R_2022\\data\\tcga_gene_exp.txt", 
+#                     header = TRUE)
+#  
+
+ here("data","tcga-clinical.txt")
+```
+
+```
+[1] "F:/myGitRepo/Intro_to_R_2022/data/tcga-clinical.txt"
+```
+
+```r
+ here("data","tcga-gene-exp.txt")
+```
+
+```
+[1] "F:/myGitRepo/Intro_to_R_2022/data/tcga-gene-exp.txt"
+```
+
+---
+ 
+## Data prep: Load
+ 
+
+
+```r
+# clinical &lt;- read.csv(file = here("data","tcga-clinical.csv"),
+#                      header = TRUE)
+# geneexp &lt;- read.csv(file = here("data","tcga-clinical.csv"), 
+#                     header = TRUE)
+```
+
+
+
+
+
+---
+ 
+## Data prep: merge
+ 
+
+
+```r
+  tcgatest &lt;- left_join(clinical, geneexp)
+  tcga &lt;- left_join(clinical, geneexp, by = "bcr_patient_barcode")
+
+    intersect(names(clinical), names(geneexp))
+```
+
+```
+[1] "bcr_patient_barcode"
+```
+
+```r
+     dim(tcgatest)
+```
+
+```
+[1] 1043   32
+```
+
+```r
+     dim(tcga)
+```
+
+```
+[1] 1043   32
+```
+
+
+
+---
+
+
+
+## Data prep: mutate
+ 
+
+
+```r
+  tcga &lt;- tcga %&gt;% mutate(
+  smoking = tobacco_smoking_history,
+  smoking = case_when(
+    tobacco_smoking_history %in% c(
+      "Current reformed smoker for &lt; or = 15 years",
+      "Current reformed smoker for &gt; 15 years",
+      "Current Reformed Smoker, Duration Not Specified"
+    ) ~ "Former",
+    tobacco_smoking_history %in% c("Current smoker") ~ "Current",
+    tobacco_smoking_history %in% c("Lifelong Non-smoker") ~ "Never",
+    is.na(tobacco_smoking_history) ~ NA_character_
+  )
+)
+```
+
+
+
+
+
  
 ---
 
@@ -118,7 +226,7 @@ ggplot(tcga) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-2-1.png" width="100%" /&gt;
+&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-6-1.png" width="100%" /&gt;
 ]
 ]
  
@@ -142,7 +250,7 @@ ggplot(tcga) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-3-1.png" width="100%" /&gt;
+&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-7-1.png" width="100%" /&gt;
 ]
 ]
  
@@ -167,12 +275,98 @@ ggplot(tcga %&gt;% filter(!is.na(smoking))) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-4-1.png" width="100%" /&gt;
+&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-8-1.png" width="100%" /&gt;
+]
+]
+ 
+---
+
+## Scatter plots 
+
+  
+
+.panelset[
+.panel[.panel-name[R Code]
+
+
+```r
+ggplot(tcga %&gt;% filter(!is.na(smoking))) + 
+  aes(DUOXA1_exp, DUOX1_exp) + 
+  geom_point(aes(shape = smoking, colour = gender)) 
+```
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-9-1.png" width="100%" /&gt;
+]
+]
+ 
+---
+
+## Scatter plots 
+
+  
+
+.panelset[
+.panel[.panel-name[R Code]
+
+
+```r
+ggplot(tcga %&gt;% filter(!is.na(smoking))) + 
+  aes(DUOXA1_exp, DUOX1_exp) + 
+  geom_point(aes(shape = smoking, colour = gender))  + 
+  scale_color_brewer(palette="Dark2") + 
+  theme_minimal()
+```
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-10-1.png" width="100%" /&gt;
 ]
 ]
  
  
+---
+
+## Scatter plots 
+
+  
+
+.panelset[
+.panel[.panel-name[R Code]
+
+
+```r
+ggplot(tcga %&gt;% filter(!is.na(smoking))) + 
+  aes(DUOXA1_exp, DUOX1_exp) + 
+  geom_point(aes(shape = smoking, colour = gender))  + 
+  scale_color_brewer(palette="Spectral") + 
+  theme_dark()
+```
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-11-1.png" width="100%" /&gt;
+]
+]
+  
+
+---
+
+## Getting help 
+
+- In R console 
+
+&gt; library(ggplot2)
+
+&gt; ?scale_color_brewer
  
+&gt; ?theme
+
+
 ---
 
 ## Scatter plots 
@@ -192,13 +386,91 @@ ggplot(tcga) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-5-1.png" width="100%" /&gt;
+&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-12-1.png" width="100%" /&gt;
+]
+]
+ 
+
+
+---
+
+## Scatter plots 
+
+  
+
+.panelset[
+.panel[.panel-name[R Code]
+
+
+```r
+ggplot(tcga) + 
+  aes(DUOXA1_exp, DUOX1_exp) + 
+  geom_point(aes(size = stage,colour = weight))   + 
+  scale_color_distiller(palette="Oranges") + 
+  theme_dark()
+```
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-13-1.png" width="100%" /&gt;
 ]
 ]
  
 
 
 
+ 
+---
+
+## Scatter plots 
+
+  
+
+.panelset[
+.panel[.panel-name[R Code]
+
+
+```r
+ggplot(tcga) + 
+  aes(DUOXA1_exp, DUOX1_exp) + 
+  geom_point(aes(size = stage,colour = weight, shape = gender)) 
+```
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-14-1.png" width="100%" /&gt;
+]
+]
+ 
+
+
+ 
+---
+
+## Scatter plots 
+
+  
+
+.panelset[
+.panel[.panel-name[R Code]
+
+
+```r
+ggplot(tcga) + 
+  aes(DUOXA1_exp, DUOX1_exp) + 
+  geom_point(aes(size = stage,colour = weight, 
+                 shape = gender, alpha = .5)) 
+```
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-15-1.png" width="100%" /&gt;
+]
+]
+ 
 
  
 
@@ -368,37 +640,13 @@ ggplot(tcga) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-9-1.png" width="100%" /&gt;
+&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-19-1.png" width="100%" /&gt;
 ]
 ]
  
 
 
 
-
----
-
-## Pearson Correlation Scatter Plot
-  
-.panelset[
-.panel[.panel-name[R Code]
-
-
-```r
-ggplot(tcga) + 
-  aes(BUB1_exp, C10orf32_exp) + 
-  geom_point() + 
-  annotate(geom = "text", x = 1000, y = 4000, 
-           label = paste("r = ", round(r2$r, 2), sep = ""),
-           color = "red")
-```
-]
-
-.panel[.panel-name[Plot]
-
-&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-10-1.png" width="100%" /&gt;
-]
-]
 
  
 
@@ -422,7 +670,7 @@ ggplot(tcga) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-11-1.png" width="100%" /&gt;
+&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-20-1.png" width="100%" /&gt;
 ]
 ]
 
@@ -472,7 +720,18 @@ The Spearman correlation evaluates the monotonic relationship between two contin
 
 
  
-&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-13-1.png" width="100%" /&gt;
+&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-22-1.png" width="100%" /&gt;
+
+---
+
+
+
+## Example of monotonic relationship
+
+
+ 
+&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-23-1.png" width="100%" /&gt;
+
 
 
 ---
@@ -586,6 +845,32 @@ Observations: 1043
 
 
 
+
+---
+
+## Spearman Correlation Scatter Plot
+  
+.panelset[
+.panel[.panel-name[R Code]
+
+
+```r
+ggplot(tcga) + 
+  aes(BUB1_exp, C10orf32_exp) + 
+  geom_point() + 
+  annotate(geom = "text", x = 1000, y = 4000, 
+           label = paste("r = ", round(r2$r, 2), sep = ""),
+           color = "red")
+```
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-27-1.png" width="100%" /&gt;
+]
+]
+
+
 ---
 
 ## Correllation Matrix 
@@ -631,7 +916,7 @@ DTL_exp          0.62      0.62     0.88     0.01    1.00
 `\(Y_{i}\)` = `\(\beta_{0}\)` + `\(\beta_{1}\)` `\(X_{1}\)` + `\(\epsilon_{i}\)` where `\(\epsilon_{i}\)` ~ `\(N(0, \sigma^{2})\)`
 
 - `\(X_{1}\)` is the predictor or independent variable.
-- `\(\beta_{0}\)` is the intercept and `\(\beta_{1}\)` is the vector of parameters
+- `\(\beta_{0}\)` is the intercept and `\(\beta_{1}\)` is the slope
 - `\(\epsilon\)` is the error vector (residuals)
 - `\(Y_{i}\)` is the response vector or dependent variable
 
@@ -701,30 +986,62 @@ Residual standard error: 824.9 on 1041 degrees of freedom
 Multiple R-squared:  0.8431,	Adjusted R-squared:  0.8429 
 F-statistic:  5593 on 1 and 1041 DF,  p-value: &lt; 0.00000000000000022
 ```
- 
 
- 
+
 ---
 
-##  Regression plots 
-  
-.panelset[
-.panel[.panel-name[R Code]
+
+##  Simple linear regression 
+ 
 
 
 ```r
-  par(mfrow=c(1,2))
-  plot(lmfit, which=1:2)
+names( lmfit )
 ```
-]
 
-.panel[.panel-name[Plot]
+```
+ [1] "coefficients"  "residuals"     "effects"       "rank"         
+ [5] "fitted.values" "assign"        "qr"            "df.residual"  
+ [9] "xlevels"       "call"          "terms"         "model"        
+```
 
-&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-20-1.png" width="100%" /&gt;
-]
-]
+```r
+names( summary(lmfit) )
+```
 
+```
+ [1] "call"          "terms"         "residuals"     "coefficients" 
+ [5] "aliased"       "sigma"         "df"            "r.squared"    
+ [9] "adj.r.squared" "fstatistic"    "cov.unscaled" 
+```
  
+
+
+---
+
+
+##  Simple linear regression:  residual variance
+ 
+
+
+```r
+ summary(lmfit)$sigma
+```
+
+```
+[1] 824.8818
+```
+
+```r
+ (summary(lmfit)$sigma)**2 
+```
+
+```
+[1] 680430
+```
+ 
+ 
+
 
 
 
@@ -751,7 +1068,7 @@ ggplot(tcga, aes(DUOXA1_exp, DUOX1_exp) ) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-21-1.png" width="100%" /&gt;
+&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-33-1.png" width="100%" /&gt;
 ]
 ]
  
@@ -781,7 +1098,7 @@ ggplot(tcga, aes(DUOXA1_exp, DUOX1_exp)) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-22-1.png" width="100%" /&gt;
+&lt;img src="06_slides-stats-2022_files/figure-html/unnamed-chunk-34-1.png" width="100%" /&gt;
 ]
 ]
  

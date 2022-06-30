@@ -417,7 +417,7 @@ ggplot(tcga %>% filter(race %in% c("ASIAN" )),
  
 # Kaplan-Meier Curves and estimates
  
-The Kaplan–Meier estimator,also known as the product limit estimator, is a non-parametric statistic used to estimate the survival function from time to event data. In medical research, it is often used to measure the fraction of patients living for a certain amount of time after treatment. In other fields, Kaplan–Meier estimators may be used to measure the time-to-failure of machine parts.
+The Kaplan–Meier estimator, also known as the product limit estimator, is a non-parametric statistic used to estimate the survival function from time to event data. In medical research, it is often used to measure the fraction of patients living for a certain amount of time after treatment. In other fields, Kaplan–Meier estimators may be used to measure the time-to-failure of machine parts.
 
 
  
@@ -514,9 +514,48 @@ p
  
 # Log rank test
   
-The log rank test is a hypothesis test to compare the survival distributions of two or more samples. It is a nonparametric test and appropriate to use when the data are right skewed and censored. It is widely used in clinical trials to establish the efficacy of a new treatment in comparison with a control treatment when the measurement is the time to event (such as the time from initial treatment to a heart attack). The test is sometimes called the Mantel–Cox test, named after Nathan Mantel and David Cox. The logrank test can also be viewed as a time-stratified Cochran–Mantel–Haenszel test.
+The log rank test is a hypothesis test to compare the survival distributions of two or more samples. It is a nonparametric test and appropriate to use when the data are right skewed and censored. It is widely used in clinical trials to establish the efficacy of a new treatment in comparison with a control treatment when the measurement is the time to event (such as the time from initial treatment to a heart attack)
+
+The test is sometimes called the Mantel–Cox test, named after Nathan Mantel and David Cox. 
+
+The logrank test can also be viewed as a time-stratified Cochran–Mantel–Haenszel test.
   
+
+---
  
+# Log rank test
+
+The logrank test is used to test the null hypothesis that there is no 
+difference between the populations in the probability of an event 
+(here a death) at any time point. The analysis is based on the times 
+of events (here deaths). For each such time we calculate the observed
+number of deaths in each group and the number expected if there were 
+in reality no difference between the groups.
+
+
+
+We can now use a $\chi ^{2}$ test of the null hypothesis. The test statistic is 
+the sum of $\sum_{it}$ $\frac{(O_{it} - E_{it})^{2}}{E_{it}}$ for each group, where O and E are the totals of
+ the observed and expected events at the time of each event. 
+  
+  
+---
+ 
+# Log rank test
+  
+  The logrank test is based on the same assumptions as the Kaplan Meier 
+survival curve, namely, that censoring is unrelated to prognosis, the 
+survival probabilities are the same for subjects recruited early and late 
+in the study, and the events happened at the times specified. Deviations 
+from these assumptions matter most if they are satisfied differently in 
+the groups being compared, for example if censoring is more likely in one 
+group than another.
+
+Because the logrank test is purely a test of significance it cannot 
+provide an estimate of the size of the difference between the groups 
+or a confidence interval. 
+  
+  
 ---
  
  
@@ -630,7 +669,6 @@ ggsurvplot(kmfit, data = tcga2,
   
 ---
 
-
 ```{r KMplotcodeCvN, echo=FALSE,  fig.width=9, fig.height=4.5 }    
  
 
@@ -662,7 +700,38 @@ ggsurvplot(kmfit, data = tcga2,
 ```
   
 
+---
 
+```{r KMplotcodeCvNcb, echo=FALSE,  fig.width=9, fig.height=4.5 }    
+ 
+
+# Smoking 2 levels:  Current vs Never ####
+
+tcga2 <- tcga %>% filter(smoking != "Former")
+OS_obj <- survival::Surv(tcga2$OS.time/365, I(tcga2$vital_status=="Dead"))
+ kmfit <-  survfit(OS_obj ~ smoking, data = tcga2)
+ 
+ggsurvplot(kmfit, data = tcga2,
+           surv.median.line = "hv", # Add medians survival
+           # Change legends: title & labels
+           title= "Overall Survival by smoking status - Current vs Never", 
+           xlab ="Years",
+           legend.title = "",
+           legend.labs = c("Current","Never" ),
+           # Add p-value and CIs
+           pval = TRUE,
+           conf.int = TRUE,
+           # Add risk table
+           risk.table = TRUE,
+           tables.height = 0.25,
+           tables.theme = theme_cleantable(),
+           # Color palettes. 
+           palette = c("#F8766D" , "#00BFC4"), 
+           ggtheme = theme_bw(), # Change ggplot2 theme
+           risk.table.title = "Number at risk"
+)# + ggtitle("Overall Survival by smoking status")
+```
+  
 
 ---
 
