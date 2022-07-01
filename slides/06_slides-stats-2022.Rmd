@@ -46,40 +46,33 @@ options(width = 70)
   library(gridExtra)
   library(broom)
   library(here)
+  library(correlation)
    
 
+# https://education.arcus.chop.edu/annotated-output-lm/
+
    
-# # MERGE and making smoking variable 
-  clinical <- read.csv(file = "F:\\myGitRepo\\Introduction-to-R\\data\\tcga-clinical.csv", header = TRUE)
-  geneexp <- read.csv(file = "F:\\myGitRepo\\Introduction-to-R\\data\\tcga-gene-exp.csv", header = TRUE)
-  clinical2 <- read_csv(file = "F:\\myGitRepo\\Intro_to_R_2022\\data\\tcga_clinical.txt" ) 
-# clinical <- read_csv(file = "F:\\myGitRepo\\Intro_to_R_2022\\data\\tcga_clinical.txt" )
-# geneexp <- read_csv(file = "F:\\myGitRepo\\Intro_to_R_2022\\data\\tcga_gene_exp.txt" )
-# 
+# # MERGE and making smoking variable  
+  # clinical <- read_csv(file = "F:\\myGitRepo\\Intro_to_R_2022\\data\\tcga_clinical.txt" )
+  # geneexp <- read_csv(file = "F:\\myGitRepo\\Intro_to_R_2022\\data\\tcga_gene_exp.txt" )
+
+# tcga <- left_join(clinical, geneexp, by = "bcr_patient_barcode")
 #  
-# intersect(names(clinical), names(geneexp))
- 
-# dim(clinical)
-# dim(geneexp)
- 
-tcga <- left_join(clinical, geneexp, by = "bcr_patient_barcode")
-#dim(tcga)
-
-
-
-tcga <- tcga %>% mutate(
-  #smoking = tobacco_smoking_history,
-  smoking = case_when(
-    tobacco_smoking_history %in% c(
-      "Current reformed smoker for < or = 15 years",
-      "Current reformed smoker for > 15 years",
-      "Current Reformed Smoker, Duration Not Specified"
-    ) ~ "Former",
-    tobacco_smoking_history %in% c("Current smoker") ~ "Current",
-    tobacco_smoking_history %in% c("Lifelong Non-smoker") ~ "Never",
-    is.na(tobacco_smoking_history) ~ NA_character_
-  )
-)
+# 
+# 
+# tcga <- tcga %>% mutate(
+#   #smoking = tobacco_smoking_history,
+#   smoking = case_when(
+#     tobacco_smoking_history %in% c(
+#       "Current reformed smoker for < or = 15 years",
+#       "Current reformed smoker for > 15 years",
+#       "Current Reformed Smoker, Duration Not Specified"
+#     ) ~ "Former",
+#     tobacco_smoking_history %in% c("Current smoker") ~ "Current",
+#     tobacco_smoking_history %in% c("Lifelong Non-smoker") ~ "Never",
+#     is.na(tobacco_smoking_history) ~ NA_character_
+#   )
+# )
 
 #table(tcga$smoking, useNA = "always")
 
@@ -174,16 +167,13 @@ or to force either to be shown
 
 ---
  
-## Data prep: Load
+## Data prep: here()
  
 
 ```{r comment=NA}
-# clinical <- read.csv(file = "F:\\myGitRepo\\Intro_to_R_2022\\data\\tcga_clinical.txt",
-#                      header = TRUE)
-# geneexp <- read.csv(file = "F:\\myGitRepo\\Intro_to_R_2022\\data\\tcga_gene_exp.txt", 
-#                     header = TRUE)
-#  
-
+ 
+ here()
+ here("data")
  here("data","tcga-clinical.txt")
  here("data","tcga-gene-exp.txt")
 
@@ -191,22 +181,17 @@ or to force either to be shown
 
 ---
  
-## Data prep: Load
+## Data prep: load
  
 
 ```{r comment=NA}
 
- 
-# clinical <- read.csv(file = here("data","tcga-clinical.csv"),
-#                      header = TRUE)
-# geneexp <- read.csv(file = here("data","tcga-clinical.csv"), 
-#                     header = TRUE)
+
+clinical <- read_csv(file = here("data","tcga_clinical.txt"))
+geneexp <- read_csv(file = here("data","tcga_gene_exp.txt"))
   
 ```
-
-
-
-
+ 
 
 ---
  
@@ -218,26 +203,23 @@ or to force either to be shown
   tcgatest <- left_join(clinical, geneexp)
   tcga <- left_join(clinical, geneexp, by = "bcr_patient_barcode")
 
-    intersect(names(clinical), names(geneexp))
+     intersect(names(clinical), names(geneexp))
      dim(tcgatest)
-     dim(tcga)
+     dim(tcga) 
 
  
 ```
 
-
-
+ 
 ---
-
-
+ 
 
 ## Data prep: mutate
  
 
 ```{r comment=NA}
  
-  tcga <- tcga %>% mutate(
-  smoking = tobacco_smoking_history,
+  tcga <- tcga %>% mutate( 
   smoking = case_when(
     tobacco_smoking_history %in% c(
       "Current reformed smoker for < or = 15 years",
@@ -250,10 +232,6 @@ or to force either to be shown
   )
 )
 ```
-
-
-
-
 
  
 ---
@@ -597,17 +575,6 @@ r3 <- tcga %>% correlation::cor_test("BRAF_exp",
  
 ```
 
----
- 
-## Pearson Correlation 
- 
-
-```{r comment=NA}
- knitr::kable(bind_rows(r1,r2,r3 ), format = 'html', digits = 3) %>%
-  kable_styling(font_size = 12)
-
-```
-
 
 
 ---
@@ -624,9 +591,25 @@ r3 <- tcga %>% correlation::cor_test("BRAF_exp",
 
 
 
+
+---
+ 
+## Pearson Correlation 
+ 
+
+```{r comment=NA}
+ knitr::kable(bind_rows(r1,r2,r3 ), format = 'html', digits = 3) %>%
+  kable_styling(font_size = 12)
+
+```
+
+
+
+
+
 ---
 
-## Pearson Correlation Scatter Plot
+## Pearson Correlation: Scatter Plot
 
 .panelset[
 .panel[.panel-name[R Code]
@@ -651,13 +634,39 @@ ggplot(tcga) +
  
 
 
+---
+
+## Pearson Correlation: Scatter Plot
+
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r geom2.2, echo = TRUE, fig.show = "hide"}
+ggplot(tcga) + 
+  aes(BUB1_exp, C10orf32_exp) + 
+  geom_point() + 
+  annotate(geom = "text", x = 10, y = 3800, 
+           label = paste("r = ", round(r2$r, 2), sep = ""),
+           color = "red")
+
+```
+]
+
+.panel[.panel-name[Plot]
+
+```{r ref.label = "geom2.2", echo = FALSE}
+```
+]
+]
+ 
+
 
 
  
 
 ---
 
-## Pearson Correlation Scatter Plot
+## Pearson Correlation: Scatter Plot
   
 .panelset[
 .panel[.panel-name[R Code]
@@ -710,6 +719,10 @@ tcga %>%
 
 The Spearman correlation evaluates the monotonic relationship between two continuous or ordinal variables. It is a nonparametric measure of rank correlation (statistical dependence between the rankings of two variables). In a monotonic relationship, the variables tend to change together, but not necessarily at a constant rate. The Spearman correlation coefficient is based on the ranked values for each variable rather than the raw data.
  
+$\rho$ = 1 - $\frac{6 \sum_{}d^{2}_{i} }{n(n^{2}-1) }$ 
+
+*  $d$ is the difference in ranks  
+
 
 
 ---
@@ -735,15 +748,15 @@ ggplot(pdata, aes(x,y)) + geom_point()
 
 
 
-## Example of monotonic relationship
+## Example of monotonic relationship 2
 
 
  
 ```{r echo=FALSE, comment=NA}
  
 
-x2 <- x <- seq(10,20,.25)
-y2 <- (x-15)^3 + 100
+x2 <- x <- seq(1,5,.25)
+y2 <- exp(-x)
 pdata <-  data.frame(x=x2,y=y2) 
 ggplot(pdata, aes(x,y)) + geom_point() 
  
@@ -803,7 +816,7 @@ r3 <- tcga %>% correlation::cor_test("BRAF_exp",
 
 ---
 
-## Spearman Correlation Scatter Plot
+## Spearman Correlation: Scatter Plot
   
 .panelset[
 .panel[.panel-name[R Code]
@@ -878,9 +891,36 @@ $Y_{i}$ = $\beta_{0}$ + $\beta_{1}$ $X_{1}$ + $\epsilon_{i}$ where $\epsilon_{i}
  There are four assumptions associated with a linear regression model:
 
 - Linearity: The relationship between X and Y is linear.
-- Homoscedasticity: The variance of residuals is the same for any value of X.
 - Independence: Observations are independent of each other.
+- Homoscedasticity: The variance of residuals is the same for any value of X.
 - Normality: For any fixed value of X, Y is normally distributed.
+
+
+---
+
+
+## Scatter Plot
+
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r geomagain, echo = TRUE, fig.show = "hide"}
+ggplot(tcga) + 
+  aes(DUOXA1_exp, DUOX1_exp) + 
+  geom_point() + 
+  annotate(geom = "text", x = 10, y = 25000, 
+           label = paste("r = ", round(r1$r, 4), sep = ""),
+           color = "red")
+
+```
+]
+
+.panel[.panel-name[Plot]
+
+```{r ref.label = "geomagain", echo = FALSE}
+```
+]
+]
 
 
 ---
@@ -894,6 +934,8 @@ $Y_{i}$ = $\beta_{0}$ + $\beta_{1}$ $X_{1}$ + $\epsilon_{i}$ where $\epsilon_{i}
  lm(DUOX1_exp ~ DUOXA1_exp, data = tcga)
 
 ```
+ 
+
 
 ---
 
@@ -907,52 +949,35 @@ summary( lmfit <-  lm(DUOX1_exp ~ DUOXA1_exp, data = tcga) )
  
 ```
 
-
 ---
+
+ 
 
 
 ##  Simple linear regression 
  
-
-```{r comment=NA}
-
-names( lmfit )
-names( summary(lmfit) )
  
-```
- 
+Residual standard error: 824.9 on 1041 degrees of freedom
 
+Multiple R-squared:  0.8431,	Adjusted R-squared:  0.8429 
+
+F-statistic:  5593 on 1 and 1041 DF,  p-value: < 0.00000000000000022
 
 ---
 
 
-##  Simple linear regression:  residual variance
- 
-
-```{r comment=NA} 
- 
- summary(lmfit)$sigma
- (summary(lmfit)$sigma)**2 
-```
- 
- 
-
-
-
-
----
 
 ## Scatter Plot with linear regression line
 
 .panelset[
 .panel[.panel-name[R Code]
 
-```{r geomreg, echo = TRUE, fig.show = "hide"}
-ggplot(tcga, aes(DUOXA1_exp, DUOX1_exp) ) + 
+```{r geomregx, echo = TRUE, fig.show = "hide"}
+ggplot(tcga, aes(DUOXA1_exp, DUOX1_exp )) + 
   geom_point() +  
   geom_smooth(method = "lm", se=FALSE, color="purple", formula = y ~ x, size = 1) +
   annotate(geom = "text", x = 10, y = 25000, 
-           label = paste("r = ", round(r1$r, 2), sep = ""),
+           label = paste("r = ", round(r1$r, 3), sep = ""),
            color = "red") +
   annotate(geom = "text", x = 1000, y = 20000, 
            label = paste("DUOX1_exp = 84.7 + 3.03*DUOXA1_exp", sep = ""),  
@@ -962,15 +987,12 @@ ggplot(tcga, aes(DUOXA1_exp, DUOX1_exp) ) +
 
 .panel[.panel-name[Plot]
 
-```{r ref.label = "geomreg", echo = FALSE}
+```{r ref.label = "geomregx", echo = FALSE}
 ```
 ]
 ]
- 
 
-
-
-
+  
 ---
 
 ## Zoom in on the Scatter Plot with linear regression line
@@ -978,7 +1000,7 @@ ggplot(tcga, aes(DUOXA1_exp, DUOX1_exp) ) +
 .panelset[
 .panel[.panel-name[R Code]
 
-```{r geomregzoom, echo = TRUE, fig.show = "hide"}
+```{r geomregzoom1, echo = TRUE, fig.show = "hide"}
 ggplot(tcga, aes(DUOXA1_exp, DUOX1_exp)) + 
   geom_point() + 
   geom_smooth(method = "lm", se=FALSE, color="purple", formula = y ~ x, size = 1) +
@@ -992,10 +1014,131 @@ ggplot(tcga, aes(DUOXA1_exp, DUOX1_exp)) +
 
 .panel[.panel-name[Plot]
 
-```{r ref.label = "geomregzoom", echo = FALSE}
+```{r ref.label = "geomregzoom1", echo = FALSE}
 ```
 ]
 ]
+ 
+  
+
+---
+
+## Residual Scatter Plot 
+ 
+ 
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r geomregres1, echo = TRUE, fig.show = "hide"}
+ 
+resid <- data.frame(fitted = lmfit$fitted.values , residuals = lmfit$residuals )
+ggplot( resid, aes(fitted, residuals) ) + 
+    geom_point()  
+```
+]
+
+.panel[.panel-name[Plot]
+
+```{r ref.label = "geomregres1", echo = FALSE}
+```
+]
+]
+ 
+
+
+ 
+
+
+
+---
+
+
+##  Simple linear regression - sqrt transformation
+ 
+
+```{r comment=NA}
+
+summary(lmfit <- lm(sqrt(DUOX1_exp) ~ sqrt(DUOXA1_exp), data = tcga))
+ 
+```
+
+
+---
+
+
+##  Simple linear regression - sqrt transformation
+ 
+ 
+Residual standard error: 6.94 on 1041 degrees of freedom
+
+Multiple R-squared:  0.9284,	Adjusted R-squared:  0.9283 
+
+F-statistic: 1.349e+04 on 1 and 1041 DF,  p-value: < 0.00000000000000022
+
+---
+
+
+##  Simple linear regression - sqrt transformation
+ 
+
+```{r comment=NA}
+
+names( lmfit )
+names( summary(lmfit) )
+ 
+```
+ 
+---
+
+## Residual Scatter Plot - sqrt transformation
+ 
+ 
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r geomregres, echo = TRUE, fig.show = "hide"}
+ 
+resid <- data.frame(fitted = lmfit$fitted.values , residuals = lmfit$residuals )
+ggplot( resid, aes(fitted, residuals) ) + 
+    geom_point()  
+```
+]
+
+.panel[.panel-name[Plot]
+
+```{r ref.label = "geomregres", echo = FALSE}
+```
+]
+]
+ 
+ 
+
+---
+
+## Scatter Plot with linear regression line - sqrt transformation
+
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r geomreg, echo = TRUE, fig.show = "hide"}
+ggplot(tcga, aes(sqrt(DUOXA1_exp), sqrt(DUOX1_exp) )) + 
+  geom_point() +  
+  geom_smooth(method = "lm", se=FALSE, color="purple", formula = y ~ x, size = 1) +
+ 
+  annotate(geom = "text", x = 50, y = 1.75, 
+           label = paste("sqrt(DUOX1_exp) = 3.58 + 1.64*srqt(DUOXA1_exp)", sep = ""),  
+           color = "purple")
+```
+]
+
+.panel[.panel-name[Plot]
+
+```{r ref.label = "geomreg", echo = FALSE}
+```
+]
+]
+ 
+
  
   
 

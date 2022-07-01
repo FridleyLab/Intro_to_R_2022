@@ -4,7 +4,7 @@
     <title>Lea.orange[R]ning about Statistics</title>
     <meta charset="utf-8" />
     <meta name="author" content="Zachary Thompson" />
-    <meta name="date" content="2022-05-23" />
+    <meta name="date" content="2022-06-30" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
     <script src="libs/tile-view/tile-view.js"></script>
@@ -46,7 +46,7 @@ Zachary Thompson&lt;br&gt;
 ]
 
 .talk-date.moffitt-gray[
-May 23, 2022
+June 30, 2022
 ]
 ]
 
@@ -94,6 +94,106 @@ or to force either to be shown
 - Kaplan-Meier Curves and estimates
 
 - Log rank tests
+
+
+---
+ 
+## Data prep: here()
+ 
+
+
+```r
+ here("data","tcga-clinical.txt")
+```
+
+```
+[1] "F:/myGitRepo/Intro_to_R_2022/data/tcga-clinical.txt"
+```
+
+```r
+ here("data","tcga-gene-exp.txt")
+```
+
+```
+[1] "F:/myGitRepo/Intro_to_R_2022/data/tcga-gene-exp.txt"
+```
+
+---
+ 
+## Data prep: Load
+ 
+
+
+```r
+clinical &lt;- read.csv(file = here("data","tcga_clinical.txt"),
+                     header = TRUE)
+geneexp &lt;- read.csv(file = here("data","tcga_gene_exp.txt"),
+                    header = TRUE)
+```
+
+
+
+
+
+---
+ 
+## Data prep: merge
+ 
+
+
+```r
+  tcgatest &lt;- left_join(clinical, geneexp)
+  tcga &lt;- left_join(clinical, geneexp, by = "bcr_patient_barcode")
+
+     intersect(names(clinical), names(geneexp))
+```
+
+```
+[1] "bcr_patient_barcode"
+```
+
+```r
+     dim(tcgatest)
+```
+
+```
+[1] 1043   33
+```
+
+```r
+     dim(tcga) 
+```
+
+```
+[1] 1043   33
+```
+
+
+
+---
+
+
+
+## Data prep: mutate
+ 
+
+
+```r
+  tcga &lt;- tcga %&gt;% mutate( 
+  smoking = case_when(
+    tobacco_smoking_history %in% c(
+      "Current reformed smoker for &lt; or = 15 years",
+      "Current reformed smoker for &gt; 15 years",
+      "Current Reformed Smoker, Duration Not Specified"
+    ) ~ "Former",
+    tobacco_smoking_history %in% c("Current smoker") ~ "Current",
+    tobacco_smoking_history %in% c("Lifelong Non-smoker") ~ "Never",
+    is.na(tobacco_smoking_history) ~ NA_character_
+  )
+)
+```
+
+
 
 
 ---
@@ -304,7 +404,7 @@ ggplot(tcga %&gt;% filter(!is.na(smoking)),
 
 .panel[.panel-name[Plot]
 
-&lt;img src="07_slides-stats-2022_files/figure-html/unnamed-chunk-9-1.png" width="100%" /&gt;
+&lt;img src="07_slides-stats-2022_files/figure-html/unnamed-chunk-13-1.png" width="100%" /&gt;
 ]
 ]
  
@@ -394,7 +494,7 @@ ggplot(tcga %&gt;% filter(race %in% c("ASIAN" )),
 
 .panel[.panel-name[Plot]
 
-&lt;img src="07_slides-stats-2022_files/figure-html/unnamed-chunk-10-1.png" width="100%" /&gt;
+&lt;img src="07_slides-stats-2022_files/figure-html/unnamed-chunk-14-1.png" width="100%" /&gt;
 ]
 ]
  

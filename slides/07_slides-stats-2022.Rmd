@@ -48,42 +48,45 @@ options(width = 70)
   library(survival)
   library(survminer)
    
-
+ 
+  library(here)
+  library(correlation)
    
-# MERGE and making smoking variable 
-clinical <- read.csv(file = "F:\\myGitRepo\\Introduction-to-R\\data\\tcga-clinical.csv", header = TRUE)
-geneexp <- read.csv(file = "F:\\myGitRepo\\Introduction-to-R\\data\\tcga-gene-exp.csv", header = TRUE)
-
- 
-# intersect(names(clinical), names(geneexp))
- 
-# dim(clinical)
-# dim(geneexp)
- 
-tcga <- left_join(clinical, geneexp, by = "bcr_patient_barcode")
-#dim(tcga)
-
-
-
-tcga <- tcga %>% mutate( 
-  smoking = case_when(
-    tobacco_smoking_history %in% c(
-      "Current reformed smoker for < or = 15 years",
-      "Current reformed smoker for > 15 years",
-      "Current Reformed Smoker, Duration Not Specified"
-    ) ~ "Former",
-    tobacco_smoking_history %in% c("Current smoker") ~ "Current",
-    tobacco_smoking_history %in% c("Lifelong Non-smoker") ~ "Never",
-    is.na(tobacco_smoking_history) ~ NA_character_
-  )
-)
- 
-
-# LOAD clinical data ####
-load("F:\\myGitRepo\\Introduction-to-R\\data\\clinical_survival_pancancer_atlas.RData")
-dim(tcga)
-tcga <- left_join(tcga, dat[,c("bcr_patient_barcode","OS.time")], by = "bcr_patient_barcode")
- dim(tcga)
+   
+# # MERGE and making smoking variable 
+# clinical <- read.csv(file = "F:\\myGitRepo\\Introduction-to-R\\data\\tcga-clinical.csv", header = TRUE)
+# geneexp <- read.csv(file = "F:\\myGitRepo\\Introduction-to-R\\data\\tcga-gene-exp.csv", header = TRUE)
+# 
+#  
+# # intersect(names(clinical), names(geneexp))
+#  
+# # dim(clinical)
+# # dim(geneexp)
+#  
+# tcga <- left_join(clinical, geneexp, by = "bcr_patient_barcode")
+# #dim(tcga)
+# 
+# 
+# 
+# tcga <- tcga %>% mutate( 
+#   smoking = case_when(
+#     tobacco_smoking_history %in% c(
+#       "Current reformed smoker for < or = 15 years",
+#       "Current reformed smoker for > 15 years",
+#       "Current Reformed Smoker, Duration Not Specified"
+#     ) ~ "Former",
+#     tobacco_smoking_history %in% c("Current smoker") ~ "Current",
+#     tobacco_smoking_history %in% c("Lifelong Non-smoker") ~ "Never",
+#     is.na(tobacco_smoking_history) ~ NA_character_
+#   )
+# )
+#  
+# 
+# # LOAD clinical data ####
+# load("F:\\myGitRepo\\Introduction-to-R\\data\\clinical_survival_pancancer_atlas.RData")
+# dim(tcga)
+# tcga <- left_join(tcga, dat[,c("bcr_patient_barcode","OS.time")], by = "bcr_patient_barcode")
+#  dim(tcga)
 
 #table(tcga$smoking, useNA = "always")
 
@@ -174,6 +177,82 @@ or to force either to be shown
 - Kaplan-Meier Curves and estimates
 
 - Log rank tests
+
+
+---
+ 
+## Data prep: location use here()
+ 
+
+```{r comment=NA}
+ 
+ here("data","tcga-clinical.txt")
+ here("data","tcga-gene-exp.txt")
+
+```
+
+---
+ 
+## Data prep: load
+ 
+
+```{r comment=NA}
+
+
+clinical <- read.csv(file = here("data","tcga_clinical.txt"),
+                     header = TRUE)
+geneexp <- read.csv(file = here("data","tcga_gene_exp.txt"),
+                    header = TRUE)
+  
+```
+
+
+
+
+
+---
+ 
+## Data prep: merge
+ 
+
+```{r comment=NA}
+ 
+  tcgatest <- left_join(clinical, geneexp)
+  tcga <- left_join(clinical, geneexp, by = "bcr_patient_barcode")
+
+     intersect(names(clinical), names(geneexp))
+     dim(tcgatest)
+     dim(tcga) 
+
+ 
+```
+
+
+
+---
+
+
+
+## Data prep: mutate
+ 
+
+```{r comment=NA}
+ 
+  tcga <- tcga %>% mutate( 
+  smoking = case_when(
+    tobacco_smoking_history %in% c(
+      "Current reformed smoker for < or = 15 years",
+      "Current reformed smoker for > 15 years",
+      "Current Reformed Smoker, Duration Not Specified"
+    ) ~ "Former",
+    tobacco_smoking_history %in% c("Current smoker") ~ "Current",
+    tobacco_smoking_history %in% c("Lifelong Non-smoker") ~ "Never",
+    is.na(tobacco_smoking_history) ~ NA_character_
+  )
+)
+```
+
+
 
 
 ---

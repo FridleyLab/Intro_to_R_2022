@@ -4,7 +4,7 @@
     <title>Lea.orange[R]ning about Statistics - YEAH!!!</title>
     <meta charset="utf-8" />
     <meta name="author" content="Zachary Thompson" />
-    <meta name="date" content="2022-05-23" />
+    <meta name="date" content="2022-07-01" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
     <script src="libs/tile-view/tile-view.js"></script>
@@ -48,7 +48,7 @@ Zachary Thompson&lt;br&gt;
 ]
 
 .talk-date.moffitt-gray[
-May 23, 2022
+July 01, 2022
 ]
 ]
 
@@ -97,7 +97,113 @@ or to force either to be shown
 
 - MultivarIABLE reression
 
+
+---
  
+## Data prep: here()
+ 
+
+
+```r
+ here()
+```
+
+```
+[1] "F:/myGitRepo/Intro_to_R_2022"
+```
+
+```r
+ here("data")
+```
+
+```
+[1] "F:/myGitRepo/Intro_to_R_2022/data"
+```
+
+```r
+ here("data","tcga-clinical.txt")
+```
+
+```
+[1] "F:/myGitRepo/Intro_to_R_2022/data/tcga-clinical.txt"
+```
+
+```r
+ here("data","tcga-gene-exp.txt")
+```
+
+```
+[1] "F:/myGitRepo/Intro_to_R_2022/data/tcga-gene-exp.txt"
+```
+
+---
+ 
+## Data prep: load
+ 
+
+
+```r
+clinical &lt;- read_csv(file = here("data","tcga_clinical.txt"))
+geneexp &lt;- read_csv(file = here("data","tcga_gene_exp.txt"))
+```
+ 
+
+---
+ 
+## Data prep: merge
+ 
+
+
+```r
+  tcgatest &lt;- left_join(clinical, geneexp)
+  tcga &lt;- left_join(clinical, geneexp, by = "bcr_patient_barcode")
+
+     intersect(names(clinical), names(geneexp))
+```
+
+```
+[1] "bcr_patient_barcode"
+```
+
+```r
+     dim(tcgatest)
+```
+
+```
+[1] 1043   33
+```
+
+```r
+     dim(tcga) 
+```
+
+```
+[1] 1043   33
+```
+
+ 
+---
+ 
+
+## Data prep: mutate
+ 
+
+
+```r
+  tcga &lt;- tcga %&gt;% mutate( 
+  smoking = case_when(
+    tobacco_smoking_history %in% c(
+      "Current reformed smoker for &lt; or = 15 years",
+      "Current reformed smoker for &gt; 15 years",
+      "Current Reformed Smoker, Duration Not Specified"
+    ) ~ "Former",
+    tobacco_smoking_history %in% c("Current smoker") ~ "Current",
+    tobacco_smoking_history %in% c("Lifelong Non-smoker") ~ "Never",
+    is.na(tobacco_smoking_history) ~ NA_character_
+  )
+)
+```
+
  
 ---
 
@@ -118,7 +224,7 @@ ggplot(tcga) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-2-1.png" width="100%" /&gt;
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-59-1.png" width="100%" /&gt;
 ]
 ]
  
@@ -142,7 +248,7 @@ ggplot(tcga) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-3-1.png" width="100%" /&gt;
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-60-1.png" width="100%" /&gt;
 ]
 ]
  
@@ -167,7 +273,7 @@ ggplot(tcga %&gt;% filter(!is.na(smoking))) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-4-1.png" width="100%" /&gt;
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-61-1.png" width="100%" /&gt;
 ]
 ]
  
@@ -190,7 +296,7 @@ ggplot(tcga %&gt;% filter(!is.na(smoking))) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-5-1.png" width="100%" /&gt;
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-62-1.png" width="100%" /&gt;
 ]
 ]
  
@@ -215,7 +321,7 @@ ggplot(tcga %&gt;% filter(!is.na(smoking))) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-6-1.png" width="100%" /&gt;
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-63-1.png" width="100%" /&gt;
 ]
 ]
  
@@ -241,7 +347,7 @@ ggplot(tcga %&gt;% filter(!is.na(smoking))) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-7-1.png" width="100%" /&gt;
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-64-1.png" width="100%" /&gt;
 ]
 ]
   
@@ -278,7 +384,7 @@ ggplot(tcga) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-8-1.png" width="100%" /&gt;
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-65-1.png" width="100%" /&gt;
 ]
 ]
  
@@ -305,7 +411,7 @@ ggplot(tcga) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-9-1.png" width="100%" /&gt;
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-66-1.png" width="100%" /&gt;
 ]
 ]
  
@@ -332,7 +438,7 @@ ggplot(tcga) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-10-1.png" width="100%" /&gt;
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-67-1.png" width="100%" /&gt;
 ]
 ]
  
@@ -359,7 +465,7 @@ ggplot(tcga) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-11-1.png" width="100%" /&gt;
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-68-1.png" width="100%" /&gt;
 ]
 ]
  
@@ -415,6 +521,33 @@ r3 &lt;- tcga %&gt;% correlation::cor_test("BRAF_exp",
                                           "DTL_exp", 
                                           method = c("pearson") )
 ```
+
+
+
+---
+ 
+## Pearson Correlation 
+ 
+
+
+```r
+ bind_rows(r1,r2,r3 ) 
+```
+
+```
+Parameter1 |   Parameter2 |     r |         95% CI | t(1041) |         p
+------------------------------------------------------------------------
+DUOXA1_exp |    DUOX1_exp |  0.92 | [ 0.91,  0.93] |   74.79 | &lt; .001***
+BUB1_exp   | C10orf32_exp | -0.60 | [-0.64, -0.56] |  -24.23 | &lt; .001***
+BRAF_exp   |      DTL_exp |  0.02 | [-0.04,  0.08] |    0.64 | 0.521    
+
+Observations: 1043
+```
+
+
+
+
+
 
 ---
  
@@ -488,33 +621,11 @@ r3 &lt;- tcga %&gt;% correlation::cor_test("BRAF_exp",
 
 
 
----
- 
-## Pearson Correlation 
- 
-
-
-```r
- bind_rows(r1,r2,r3 ) 
-```
-
-```
-Parameter1 |   Parameter2 |     r |         95% CI | t(1041) |         p
-------------------------------------------------------------------------
-DUOXA1_exp |    DUOX1_exp |  0.92 | [ 0.91,  0.93] |   74.79 | &lt; .001***
-BUB1_exp   | C10orf32_exp | -0.60 | [-0.64, -0.56] |  -24.23 | &lt; .001***
-BRAF_exp   |      DTL_exp |  0.02 | [-0.04,  0.08] |    0.64 | 0.521    
-
-Observations: 1043
-```
-
-
-
 
 
 ---
 
-## Pearson Correlation Scatter Plot
+## Pearson Correlation: Scatter Plot
 
 .panelset[
 .panel[.panel-name[R Code]
@@ -532,11 +643,36 @@ ggplot(tcga) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-15-1.png" width="100%" /&gt;
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-72-1.png" width="100%" /&gt;
 ]
 ]
  
 
+
+---
+
+## Pearson Correlation: Scatter Plot
+
+.panelset[
+.panel[.panel-name[R Code]
+
+
+```r
+ggplot(tcga) + 
+  aes(BUB1_exp, C10orf32_exp) + 
+  geom_point() + 
+  annotate(geom = "text", x = 10, y = 3800, 
+           label = paste("r = ", round(r2$r, 2), sep = ""),
+           color = "red")
+```
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-73-1.png" width="100%" /&gt;
+]
+]
+ 
 
 
 
@@ -544,7 +680,7 @@ ggplot(tcga) +
 
 ---
 
-## Pearson Correlation Scatter Plot
+## Pearson Correlation: Scatter Plot
   
 .panelset[
 .panel[.panel-name[R Code]
@@ -562,7 +698,7 @@ ggplot(tcga) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-16-1.png" width="100%" /&gt;
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-74-1.png" width="100%" /&gt;
 ]
 ]
 
@@ -602,6 +738,10 @@ DTL_exp          0.30      0.30     0.78     0.02    1.00
 
 The Spearman correlation evaluates the monotonic relationship between two continuous or ordinal variables. It is a nonparametric measure of rank correlation (statistical dependence between the rankings of two variables). In a monotonic relationship, the variables tend to change together, but not necessarily at a constant rate. The Spearman correlation coefficient is based on the ranked values for each variable rather than the raw data.
  
+`\(\rho\)` = 1 - `\(\frac{6 \sum_{}d^{2}_{i} }{n(n^{2}-1) }\)` 
+
+*  `\(d\)` is the difference in ranks  
+
 
 
 ---
@@ -612,7 +752,18 @@ The Spearman correlation evaluates the monotonic relationship between two contin
 
 
  
-&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-18-1.png" width="100%" /&gt;
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-76-1.png" width="100%" /&gt;
+
+---
+
+
+
+## Example of monotonic relationship 2
+
+
+ 
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-77-1.png" width="100%" /&gt;
+
 
 
 ---
@@ -729,7 +880,7 @@ Observations: 1043
 
 ---
 
-## Spearman Correlation Scatter Plot
+## Spearman Correlation: Scatter Plot
   
 .panelset[
 .panel[.panel-name[R Code]
@@ -747,7 +898,7 @@ ggplot(tcga) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-22-1.png" width="100%" /&gt;
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-81-1.png" width="100%" /&gt;
 ]
 ]
 
@@ -810,9 +961,35 @@ DTL_exp          0.62      0.62     0.88     0.01    1.00
  There are four assumptions associated with a linear regression model:
 
 - Linearity: The relationship between X and Y is linear.
-- Homoscedasticity: The variance of residuals is the same for any value of X.
 - Independence: Observations are independent of each other.
+- Homoscedasticity: The variance of residuals is the same for any value of X.
 - Normality: For any fixed value of X, Y is normally distributed.
+
+
+---
+
+
+## Scatter Plot
+
+.panelset[
+.panel[.panel-name[R Code]
+
+
+```r
+ggplot(tcga) + 
+  aes(DUOXA1_exp, DUOX1_exp) + 
+  geom_point() + 
+  annotate(geom = "text", x = 10, y = 25000, 
+           label = paste("r = ", round(r1$r, 4), sep = ""),
+           color = "red")
+```
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-83-1.png" width="100%" /&gt;
+]
+]
 
 
 ---
@@ -835,6 +1012,8 @@ Coefficients:
 (Intercept)   DUOXA1_exp  
      84.712        3.034  
 ```
+ 
+
 
 ---
 
@@ -868,11 +1047,155 @@ Multiple R-squared:  0.8431,	Adjusted R-squared:  0.8429
 F-statistic:  5593 on 1 and 1041 DF,  p-value: &lt; 0.00000000000000022
 ```
 
+---
+
+ 
+
+
+##  Simple linear regression 
+ 
+ 
+Residual standard error: 824.9 on 1041 degrees of freedom
+
+Multiple R-squared:  0.8431,	Adjusted R-squared:  0.8429 
+
+F-statistic:  5593 on 1 and 1041 DF,  p-value: &lt; 0.00000000000000022
 
 ---
 
 
-##  Simple linear regression 
+
+## Scatter Plot with linear regression line
+
+.panelset[
+.panel[.panel-name[R Code]
+
+
+```r
+ggplot(tcga, aes(DUOXA1_exp, DUOX1_exp )) + 
+  geom_point() +  
+  geom_smooth(method = "lm", se=FALSE, color="purple", formula = y ~ x, size = 1) +
+  annotate(geom = "text", x = 10, y = 25000, 
+           label = paste("r = ", round(r1$r, 3), sep = ""),
+           color = "red") +
+  annotate(geom = "text", x = 1000, y = 20000, 
+           label = paste("DUOX1_exp = 84.7 + 3.03*DUOXA1_exp", sep = ""),  
+           color = "purple")
+```
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-86-1.png" width="100%" /&gt;
+]
+]
+
+  
+---
+
+## Zoom in on the Scatter Plot with linear regression line
+
+.panelset[
+.panel[.panel-name[R Code]
+
+
+```r
+ggplot(tcga, aes(DUOXA1_exp, DUOX1_exp)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se=FALSE, color="purple", formula = y ~ x, size = 1) +
+  annotate(geom = "text", x = 10, y = 25000, 
+           label = paste("r = ", round(r1$r, 2), sep = ""), color = "red") +
+  annotate(geom = "text", x = 1000, y = 20000, 
+           label = paste("DUOX1_exp = 84.7 + 3.03*DUOXA1_exp", sep = ""),  color = "purple") + 
+  coord_cartesian(ylim=c(0, 500), xlim=c(0, 250))
+```
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-87-1.png" width="100%" /&gt;
+]
+]
+ 
+  
+
+---
+
+## Residual Scatter Plot 
+ 
+ 
+.panelset[
+.panel[.panel-name[R Code]
+
+
+```r
+resid &lt;- data.frame(fitted = lmfit$fitted.values , residuals = lmfit$residuals )
+ggplot( resid, aes(fitted, residuals) ) + 
+    geom_point()  
+```
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-88-1.png" width="100%" /&gt;
+]
+]
+ 
+
+
+ 
+
+
+
+---
+
+
+##  Simple linear regression - sqrt transformation
+ 
+
+
+```r
+summary(lmfit &lt;- lm(sqrt(DUOX1_exp) ~ sqrt(DUOXA1_exp), data = tcga))
+```
+
+```
+
+Call:
+lm(formula = sqrt(DUOX1_exp) ~ sqrt(DUOXA1_exp), data = tcga)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-46.781  -2.707  -0.760   2.286  37.547 
+
+Coefficients:
+                 Estimate Std. Error t value            Pr(&gt;|t|)    
+(Intercept)       3.57802    0.29514   12.12 &lt;0.0000000000000002 ***
+sqrt(DUOXA1_exp)  1.64382    0.01415  116.14 &lt;0.0000000000000002 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 6.94 on 1041 degrees of freedom
+Multiple R-squared:  0.9284,	Adjusted R-squared:  0.9283 
+F-statistic: 1.349e+04 on 1 and 1041 DF,  p-value: &lt; 0.00000000000000022
+```
+
+
+---
+
+
+##  Simple linear regression - sqrt transformation
+ 
+ 
+Residual standard error: 6.94 on 1041 degrees of freedom
+
+Multiple R-squared:  0.9284,	Adjusted R-squared:  0.9283 
+
+F-statistic: 1.349e+04 on 1 and 1041 DF,  p-value: &lt; 0.00000000000000022
+
+---
+
+
+##  Simple linear regression - sqrt transformation
  
 
 
@@ -896,92 +1219,56 @@ names( summary(lmfit) )
  [9] "adj.r.squared" "fstatistic"    "cov.unscaled" 
 ```
  
-
-
 ---
 
-
-##  Simple linear regression:  residual variance
+## Residual Scatter Plot - sqrt transformation
  
+ 
+.panelset[
+.panel[.panel-name[R Code]
 
 
 ```r
- summary(lmfit)$sigma
+resid &lt;- data.frame(fitted = lmfit$fitted.values , residuals = lmfit$residuals )
+ggplot( resid, aes(fitted, residuals) ) + 
+    geom_point()  
 ```
+]
 
-```
-[1] 824.8818
-```
+.panel[.panel-name[Plot]
 
-```r
- (summary(lmfit)$sigma)**2 
-```
-
-```
-[1] 680430
-```
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-91-1.png" width="100%" /&gt;
+]
+]
  
  
-
-
-
 
 ---
 
-## Scatter Plot with linear regression line
+## Scatter Plot with linear regression line - sqrt transformation
 
 .panelset[
 .panel[.panel-name[R Code]
 
 
 ```r
-ggplot(tcga, aes(DUOXA1_exp, DUOX1_exp) ) + 
+ggplot(tcga, aes(sqrt(DUOXA1_exp), sqrt(DUOX1_exp) )) + 
   geom_point() +  
   geom_smooth(method = "lm", se=FALSE, color="purple", formula = y ~ x, size = 1) +
-  annotate(geom = "text", x = 10, y = 25000, 
-           label = paste("r = ", round(r1$r, 2), sep = ""),
-           color = "red") +
-  annotate(geom = "text", x = 1000, y = 20000, 
-           label = paste("DUOX1_exp = 84.7 + 3.03*DUOXA1_exp", sep = ""),  
+ 
+  annotate(geom = "text", x = 50, y = 1.75, 
+           label = paste("sqrt(DUOX1_exp) = 3.58 + 1.64*srqt(DUOXA1_exp)", sep = ""),  
            color = "purple")
 ```
 ]
 
 .panel[.panel-name[Plot]
 
-&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-28-1.png" width="100%" /&gt;
+&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-92-1.png" width="100%" /&gt;
 ]
 ]
  
 
-
-
-
----
-
-## Zoom in on the Scatter Plot with linear regression line
-
-.panelset[
-.panel[.panel-name[R Code]
-
-
-```r
-ggplot(tcga, aes(DUOXA1_exp, DUOX1_exp)) + 
-  geom_point() + 
-  geom_smooth(method = "lm", se=FALSE, color="purple", formula = y ~ x, size = 1) +
-  annotate(geom = "text", x = 10, y = 25000, 
-           label = paste("r = ", round(r1$r, 2), sep = ""), color = "red") +
-  annotate(geom = "text", x = 1000, y = 20000, 
-           label = paste("DUOX1_exp = 84.7 + 3.03*DUOXA1_exp", sep = ""),  color = "purple") + 
-  coord_cartesian(ylim=c(0, 500), xlim=c(0, 250))
-```
-]
-
-.panel[.panel-name[Plot]
-
-&lt;img src="Lecture6slides_files/figure-html/unnamed-chunk-29-1.png" width="100%" /&gt;
-]
-]
  
   
 
