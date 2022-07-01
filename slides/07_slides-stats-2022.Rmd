@@ -217,11 +217,10 @@ geneexp <- read.csv(file = here("data","tcga_gene_exp.txt"),
 
 ```{r comment=NA}
  
-  tcgatest <- left_join(clinical, geneexp)
   tcga <- left_join(clinical, geneexp, by = "bcr_patient_barcode")
 
      intersect(names(clinical), names(geneexp))
-     dim(tcgatest)
+
      dim(tcga) 
 
  
@@ -494,7 +493,7 @@ ggplot(tcga %>% filter(race %in% c("ASIAN" )),
  
 ---
  
-# Kaplan-Meier Curves and estimates
+# Kaplan-Meier estimates and curves
  
 The Kaplan–Meier estimator, also known as the product limit estimator, is a non-parametric statistic used to estimate the survival function from time to event data. In medical research, it is often used to measure the fraction of patients living for a certain amount of time after treatment. In other fields, Kaplan–Meier estimators may be used to measure the time-to-failure of machine parts.
 
@@ -502,7 +501,7 @@ The Kaplan–Meier estimator, also known as the product limit estimator, is a no
  
 ---
 
-## Kaplan-Meier Curves and estimates
+## Kaplan-Meier estimates and curves
  
  
 
@@ -512,7 +511,7 @@ An important advantage of the Kaplan–Meier curve is that the method can take i
 
 ---
 
-## Kaplan-Meier Curves and estimates
+## Kaplan-Meier estimates and curves
  
 The estimator of the survival function: 
  
@@ -524,7 +523,101 @@ $\hat{S}(t)$ = $\prod_{i:t_{i}<t}$ $(1-\frac{d_{i}}{n_{i}})$
 
 ---
  
-## Kaplan-Meier Curves 
+## Kaplan-Meier estimates and curves: Data
+ 
+ 
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r kmcodedata, echo = TRUE, fig.show = "hide"}
+
+ OSdata <-  data.frame(OStime = tcga$OS.time/365, 
+                       Death = I(tcga$vital_status=="Dead"))   
+  
+ 
+
+
+```
+]
+
+.panel[.panel-name[R Result]
+
+```{r kmfitsdata, echo = TRUE, fig.show = "hide"}
+
+ head(OSdata, 10) 
+ 
+```
+]
+
+
+]
+
+
+---
+ 
+ 
+ 
+## Kaplan-Meier estimates and curves: Survival object
+ 
+ 
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r kmcodesobj, echo = TRUE, fig.show = "hide"}
+
+ OS_obj<-survival::Surv(tcga$OS.time/365, I(tcga$vital_status=="Dead"))  
+  
+ 
+
+
+```
+]
+
+.panel[.panel-name[R Result]
+
+```{r kmfitsobj, echo = TRUE, fig.show = "hide"}
+
+ head(OS_obj,40) 
+ 
+```
+]
+
+
+]
+
+---
+ 
+## Kaplan-Meier estimates and curves: Data again
+ 
+ 
+.panelset[
+.panel[.panel-name[R Code]
+
+```{r kmcodedata2, echo = TRUE, fig.show = "hide"}
+
+ OSdata <- bind_cols(OSdata, OS_obj)
+ 
+
+
+```
+]
+
+.panel[.panel-name[R Result]
+
+```{r kmfitsdata2, echo = TRUE, fig.show = "hide"}
+
+ head(OSdata, 10) 
+ 
+```
+]
+
+
+]
+
+
+---
+ 
+## Kaplan-Meier estimates and curves: Survfit 
  
  
 .panelset[
@@ -532,8 +625,7 @@ $\hat{S}(t)$ = $\prod_{i:t_{i}<t}$ $(1-\frac{d_{i}}{n_{i}})$
 
 ```{r kmcode, echo = TRUE, fig.show = "hide"}
 
- OS_obj <- survival::Surv(tcga$OS.time/365, I(tcga$vital_status=="Dead")) 
- kmfit <-  survfit(OS_obj ~ smoking, data = tcga)
+ kmfit <-  survfit(OS_obj ~ gender, data = tcga)
   
  
 
@@ -553,19 +645,69 @@ $\hat{S}(t)$ = $\prod_{i:t_{i}<t}$ $(1-\frac{d_{i}}{n_{i}})$
 
 ]
 
+
+
+---
  
+## Kaplan-Meier estimates and curves: Survfit 
+ 
+
+```{r kmfitsum, echo = TRUE, fig.show = "hide"}
+
+ summary(kmfit) 
+ 
+```
+
+
+
 ---
  
  
-```{r KMplotcode }    
+##  Kaplan-Meier estimates and curves: Estimating x-year survival
+
+```{r kmcode1yr2 }
+ 
+summary(survfit(OS_obj ~ gender, data = tcga  ), times = 5, extend=TRUE)
+ 
+
+
+```
+
+---
+--- 
+
+## Plot code
+
 p <-  ggsurvplot(kmfit, data = tcga,
            # Add median survival lines
            surv.median.line = "hv", 
            # Change legends: title & labels
-           title= "Overall Survival by smoking status", 
+           title= "Overall Survival by gender", 
+           xlab ="Years", legend.labs = c("Female","Male"  ),
+           # Add p-value and CIs
+           pval = FALSE,
+           conf.int = FALSE,
+           # Add risk table
+           risk.table = TRUE, tables.height = 0.2, 
+           tables.theme = theme_cleantable(),
+           # Color palettes.
+           palette = c("Red","Blue" ) 
+           # Change ggplot2 theme
+           ggtheme = theme_bw(), 
+           risk.table.title = "Number at risk") 
+ 
+---
+ 
+ 
+```{r KMplotdisplay , echo = FALSE, fig.height=4.5 , fig.width = 8}    
+p <-  ggsurvplot(kmfit, data = tcga,
+           # Add median survival lines
+           surv.median.line = "hv", 
+           # Change legends: title & labels
+           title= "Overall Survival by gender", 
            xlab ="Years", 
-           legend.title = "",
-           legend.labs = c("Current","Former","Never" ),
+           #legend.title = "",
+            legend.labs = c("Female","Male" ),
            # Add p-value and CIs
            pval = FALSE,
            conf.int = FALSE,
@@ -574,17 +716,11 @@ p <-  ggsurvplot(kmfit, data = tcga,
            tables.height = 0.2,
            tables.theme = theme_cleantable(),
            # Color palettes.
-           palette = c("#F8766D","#00BA38", "#00BFC4"),  
+           palette = c("Red","Blue"),
            # Change ggplot2 theme
            ggtheme = theme_bw(), 
            risk.table.title = "Number at risk") 
  
-```
-  
----
- 
- 
-```{r KMplotdisplay , echo = FALSE, fig.height=4.5 , fig.width = 8}    
 p  
  
 ```   
@@ -652,20 +788,20 @@ survdiff(OS_obj ~ smoking, data = tcga)
  
  
 ```{r KMplotcodeagain, echo=FALSE,  fig.width=9, fig.height=4.5}
-   ggsurvplot(kmfit, data = tcga,
+
+kmfit <-  survfit(OS_obj ~ smoking, data = tcga)   
+ggsurvplot(kmfit, data = tcga,
            # Add median survival lines
            surv.median.line = "hv", 
            # Change legends: title & labels
            title= "Overall Survival by smoking status", 
            xlab ="Years", 
-           legend.title = "",
-           legend.labs = c("Current","Former","Never" ),
+           legend.title = "", legend.labs = c("Current","Former","Never" ),
            # Add p-value and CIs
            pval = TRUE,
            conf.int = FALSE,
            # Add risk table
-           risk.table = TRUE,
-           tables.height = 0.25,
+           risk.table = TRUE, tables.height = 0.25,
            tables.theme = theme_cleantable(),
            # Color palettes.
            palette = c("#F8766D","#00BA38", "#00BFC4"),  
@@ -679,8 +815,7 @@ survdiff(OS_obj ~ smoking, data = tcga)
 ---
 
 
-```{r KMplotcodefvN, echo=FALSE,  fig.width=9, fig.height=4.5 }    
-
+```{r KMplotcodefvN, echo=FALSE,  fig.width=9, fig.height=4.5, eval = TRUE, include=TRUE }    
 
 # Smoking 2 levels:  Never vs former ####
 
