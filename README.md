@@ -83,10 +83,13 @@ before you arrive that you can access GitHub.
     I](https://moffitt.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=d525ac17-661c-44f4-9ad3-aeae0153744a)
 -   June 15 - [Data wrangling part
     II](https://moffitt.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=c9dcb86c-d5fe-4662-bfbf-aeb5014a74bb)
--   June 22 - Visualizations with `ggplot2`
--   June 29 - Statistics part I
--   July 06 - Statistics part II
--   July 13 - `rmarkdown`
+-   June 22 - [Visualizations with `ggplot2` part
+    I](https://moffitt.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=59d650c7-fb6d-45b7-9146-aebc014f764c)
+-   June 22 - [Visualizations with `ggplot2` part
+    II](https://moffitt.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=77afb363-11d7-40c5-beff-aec3014a604f)
+-   July 06 - Statistics part I
+-   July 13 - Statistics part II
+-   July 20 - `rmarkdown`
 
 ## Instructors
 
