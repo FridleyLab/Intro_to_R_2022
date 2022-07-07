@@ -1205,92 +1205,49 @@ $\beta_{0}$, $\beta_{1}$, $\beta_{2}$, $\beta_{k}$. This means that each paramet
 
 ```{r comment=NA}
 
-summary( lm(DUOX1_exp ~ DUOXA1_exp  + gender, data = tcga) )
+summary( mlmfit<- lm(DUOX1_exp ~ DUOXA1_exp  + gender, data = tcga) )
 
 ```
+ 
 
 
-<!-- --- -->
-
-<!-- ## Scatter Plot with linear regression lines -->
-
-<!-- .panelset[ -->
-<!-- .panel[.panel-name[R Code] -->
-
-<!-- ```{r geomre2, echo = TRUE, fig.show = "hide"} -->
-<!-- ggplot(tcga, aes(x = DUOXA1_exp, y = DUOX1_exp, shape = gender, color = gender)) +  -->
-<!--   geom_point() +  -->
-<!--   #geom_smooth(method = "lm", se=FALSE, formula = y ~ x, size = 1,fullrange=TRUE,aes( color=gender))   -->
-<!--   geom_smooth(method = "lm" , se=FALSE)   -->
-<!-- ``` -->
-<!-- ] -->
-
-<!-- .panel[.panel-name[Plot] -->
-
-<!-- ```{r ref.label = "geomre2", echo = FALSE} -->
-<!-- ``` -->
-<!-- ] -->
-<!-- ] -->
+---
 
 
+##  Multivariable regression
+ 
+ 
+Residual standard error: 6.94 on 1041 degrees of freedom
 
-<!-- --- -->
+Multiple R-squared:  0.9284,	Adjusted R-squared:  0.9283 
 
-<!-- ## Scatter Plot with linear regression line -->
+F-statistic: 1.349e+04 on 1 and 1041 DF,  p-value: < 0.00000000000000022
 
-<!-- .panelset[ -->
-<!-- .panel[.panel-name[R Code] -->
+ 
 
-<!-- ```{r geomregzoommult, echo = TRUE, fig.show = "hide"} -->
-<!-- ggplot(tcga, aes(x = DUOXA1_exp, y = DUOX1_exp, shape = gender, color = gender)) +  -->
-<!--   geom_point() +  -->
-<!--   geom_smooth(method = "lm", se=FALSE, formula = y ~ x, size = 1, fullrange=TRUE, aes( color=gender))  + -->
-<!--   coord_cartesian(ylim=c(0, 500), xlim=c(0, 200)) -->
-<!-- ``` -->
-<!-- ] -->
+---
 
-<!-- .panel[.panel-name[Plot] -->
+##  Multivariable regression 
+ 
 
-<!-- ```{r ref.label = "geomregzoommult", echo = FALSE} -->
-<!-- ``` -->
-<!-- ] -->
-<!-- ] -->
+```{r comment=NA}
 
+summary( mlmfit2 <- lm(DUOX1_exp ~ DUOXA1_exp  + gender + smoking , data = tcga) )
 
+```
+---
 
 
-<!-- --- -->
+##  Multivariable regression
+ 
+ 
+ Residual standard error: 1086 on 580 degrees of freedom
+  (458 observations deleted due to missingness)
+  
+Multiple R-squared:  0.7758,	Adjusted R-squared:  0.7743
 
-
-
-<!-- ##  Testing slide 1 -->
-
-
-<!-- ```{r comment=NA} -->
-
-<!-- lm(DUOX1_exp ~ DUOXA1_exp   , data = tcga, subset =  tcga$gender=="MALE")   -->
-
-<!-- ``` -->
-
-
-
-<!-- --- -->
-
-
-
-<!-- ##  Testing slide 2 -->
-
-
-<!-- ```{r comment=NA} -->
-
-<!--  lm(DUOX1_exp ~ DUOXA1_exp  , data = tcga, subset =  tcga$gender=="FEMALE")   -->
-
-<!-- ``` -->
-
-
-
-
-
+F-statistic: 501.8 on 4 and 580 DF,  p-value: < 0.00000000000000022
+---
 
 ---
  

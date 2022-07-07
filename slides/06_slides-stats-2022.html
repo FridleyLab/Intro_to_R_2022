@@ -4,7 +4,7 @@
     <title>Lea.orange[R]ning about Statistics - YEAH!!!</title>
     <meta charset="utf-8" />
     <meta name="author" content="Zachary Thompson" />
-    <meta name="date" content="2022-07-06" />
+    <meta name="date" content="2022-07-07" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
     <script src="libs/tile-view/tile-view.js"></script>
@@ -48,7 +48,7 @@ Zachary Thompson&lt;br&gt;
 ]
 
 .talk-date.moffitt-gray[
-July 06, 2022
+July 07, 2022
 ]
 ]
 
@@ -1344,7 +1344,7 @@ Coefficients:
 
 
 ```r
-summary( lm(DUOX1_exp ~ DUOXA1_exp  + gender, data = tcga) )
+summary( mlmfit&lt;- lm(DUOX1_exp ~ DUOXA1_exp  + gender, data = tcga) )
 ```
 
 ```
@@ -1368,89 +1368,73 @@ Residual standard error: 824.1 on 1040 degrees of freedom
 Multiple R-squared:  0.8435,	Adjusted R-squared:  0.8432 
 F-statistic:  2803 on 2 and 1040 DF,  p-value: &lt; 0.00000000000000022
 ```
+ 
 
 
-&lt;!-- --- --&gt;
-
-&lt;!-- ## Scatter Plot with linear regression lines --&gt;
-
-&lt;!-- .panelset[ --&gt;
-&lt;!-- .panel[.panel-name[R Code] --&gt;
-
-&lt;!-- ```{r geomre2, echo = TRUE, fig.show = "hide"} --&gt;
-&lt;!-- ggplot(tcga, aes(x = DUOXA1_exp, y = DUOX1_exp, shape = gender, color = gender)) +  --&gt;
-&lt;!--   geom_point() +  --&gt;
-&lt;!--   #geom_smooth(method = "lm", se=FALSE, formula = y ~ x, size = 1,fullrange=TRUE,aes( color=gender))   --&gt;
-&lt;!--   geom_smooth(method = "lm" , se=FALSE)   --&gt;
-&lt;!-- ``` --&gt;
-&lt;!-- ] --&gt;
-
-&lt;!-- .panel[.panel-name[Plot] --&gt;
-
-&lt;!-- ```{r ref.label = "geomre2", echo = FALSE} --&gt;
-&lt;!-- ``` --&gt;
-&lt;!-- ] --&gt;
-&lt;!-- ] --&gt;
+---
 
 
+##  Multivariable regression
+ 
+ 
+Residual standard error: 6.94 on 1041 degrees of freedom
 
-&lt;!-- --- --&gt;
+Multiple R-squared:  0.9284,	Adjusted R-squared:  0.9283 
 
-&lt;!-- ## Scatter Plot with linear regression line --&gt;
-
-&lt;!-- .panelset[ --&gt;
-&lt;!-- .panel[.panel-name[R Code] --&gt;
-
-&lt;!-- ```{r geomregzoommult, echo = TRUE, fig.show = "hide"} --&gt;
-&lt;!-- ggplot(tcga, aes(x = DUOXA1_exp, y = DUOX1_exp, shape = gender, color = gender)) +  --&gt;
-&lt;!--   geom_point() +  --&gt;
-&lt;!--   geom_smooth(method = "lm", se=FALSE, formula = y ~ x, size = 1, fullrange=TRUE, aes( color=gender))  + --&gt;
-&lt;!--   coord_cartesian(ylim=c(0, 500), xlim=c(0, 200)) --&gt;
-&lt;!-- ``` --&gt;
-&lt;!-- ] --&gt;
-
-&lt;!-- .panel[.panel-name[Plot] --&gt;
-
-&lt;!-- ```{r ref.label = "geomregzoommult", echo = FALSE} --&gt;
-&lt;!-- ``` --&gt;
-&lt;!-- ] --&gt;
-&lt;!-- ] --&gt;
+F-statistic: 1.349e+04 on 1 and 1041 DF,  p-value: &lt; 0.00000000000000022
 
 
+ Residual standard error: 1086 on 580 degrees of freedom
+  (458 observations deleted due to missingness)
+Multiple R-squared:  0.7758,	Adjusted R-squared:  0.7743 
+F-statistic: 501.8 on 4 and 580 DF,  p-value: &lt; 0.00000000000000022
+---
+
+##  Multivariable regression 
+ 
 
 
-&lt;!-- --- --&gt;
+```r
+summary( mlmfit2 &lt;- lm(DUOX1_exp ~ DUOXA1_exp  + gender + smoking , data = tcga) )
+```
+
+```
+
+Call:
+lm(formula = DUOX1_exp ~ DUOXA1_exp + gender + smoking, data = tcga)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-8694.4  -454.4  -140.8   353.8  5918.7 
+
+Coefficients:
+                Estimate Std. Error t value            Pr(&gt;|t|)    
+(Intercept)    167.78923  126.45033   1.327              0.1851    
+DUOXA1_exp       2.96067    0.06663  44.435 &lt;0.0000000000000002 ***
+genderMALE    -156.24001  102.56811  -1.523              0.1282    
+smokingFormer  198.13568  105.87948   1.871              0.0618 .  
+smokingNever   160.65719  119.00951   1.350              0.1776    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1086 on 580 degrees of freedom
+  (458 observations deleted due to missingness)
+Multiple R-squared:  0.7758,	Adjusted R-squared:  0.7743 
+F-statistic: 501.8 on 4 and 580 DF,  p-value: &lt; 0.00000000000000022
+```
+---
 
 
+##  Multivariable regression
+ 
+ 
+ Residual standard error: 1086 on 580 degrees of freedom
+  (458 observations deleted due to missingness)
+  
+Multiple R-squared:  0.7758,	Adjusted R-squared:  0.7743
 
-&lt;!-- ##  Testing slide 1 --&gt;
-
-
-&lt;!-- ```{r comment=NA} --&gt;
-
-&lt;!-- lm(DUOX1_exp ~ DUOXA1_exp   , data = tcga, subset =  tcga$gender=="MALE")   --&gt;
-
-&lt;!-- ``` --&gt;
-
-
-
-&lt;!-- --- --&gt;
-
-
-
-&lt;!-- ##  Testing slide 2 --&gt;
-
-
-&lt;!-- ```{r comment=NA} --&gt;
-
-&lt;!--  lm(DUOX1_exp ~ DUOXA1_exp  , data = tcga, subset =  tcga$gender=="FEMALE")   --&gt;
-
-&lt;!-- ``` --&gt;
-
-
-
-
-
+F-statistic: 501.8 on 4 and 580 DF,  p-value: &lt; 0.00000000000000022
+---
 
 ---
  
