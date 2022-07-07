@@ -368,7 +368,7 @@ wilcox_gender
 	Wilcoxon rank sum test with continuity correction
 
 data:  BUB1_exp by gender
-W = 93990, p-value = 7.221e-07
+W = 93990, p-value = 0.0000007221
 alternative hypothesis: true location shift is not equal to 0
 ```
 
@@ -433,9 +433,9 @@ summary(fit_stage)
 ```
 
 ```
-##               Df    Sum Sq  Mean Sq F value Pr(&gt;F)    
-## stage          3  41684114 13894705   117.9 &lt;2e-16 ***
-## Residuals   1039 122446593   117850                   
+##               Df    Sum Sq  Mean Sq F value              Pr(&gt;F)    
+## stage          3  41684114 13894705   117.9 &lt;0.0000000000000002 ***
+## Residuals   1039 122446593   117850                                
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -537,10 +537,10 @@ summary(fit_gender_stage)
 ```
 
 ```
-##               Df    Sum Sq  Mean Sq F value   Pr(&gt;F)    
-## gender         1   3205376  3205376   27.36 2.04e-07 ***
-## stage          3  39333361 13111120  111.93  &lt; 2e-16 ***
-## Residuals   1038 121591970   117141                     
+##               Df    Sum Sq  Mean Sq F value               Pr(&gt;F)    
+## gender         1   3205376  3205376   27.36          0.000000204 ***
+## stage          3  39333361 13111120  111.93 &lt; 0.0000000000000002 ***
+## Residuals   1038 121591970   117141                                 
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -698,19 +698,6 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
-// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
-// screen reader (see PR #262)
-(function(d) {
-  let res = {};
-  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
-    const t = tr.querySelector('td:nth-child(2)').innerText;
-    tr.querySelectorAll('td:first-child .key').forEach(key => {
-      const k = key.innerText;
-      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
-    });
-  });
-  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
-})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable

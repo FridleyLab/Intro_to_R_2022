@@ -717,7 +717,7 @@ tcga %>%
 
 ## Spearman Correlation 
 
-The Spearman correlation evaluates the monotonic relationship between two continuous or ordinal variables. It is a nonparametric measure of rank correlation (statistical dependence between the rankings of two variables). In a monotonic relationship, the variables tend to change together, but not necessarily at a constant rate. The Spearman correlation coefficient is based on the ranked values for each variable rather than the raw data.
+The Spearman correlation evaluates the monotonic or non-linear relationship between two continuous or ordinal variables. It is a nonparametric measure of rank correlation (statistical dependence between the rankings of two variables). In a monotonic relationship, the variables tend to change together, but not necessarily at a constant rate. The Spearman correlation coefficient is based on the ranked values for each variable rather than the raw data.
  
 $\rho$ = 1 - $\frac{6 \sum_{}d^{2}_{i} }{n(n^{2}-1) }$ 
 
