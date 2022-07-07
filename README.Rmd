@@ -93,7 +93,7 @@ arrive that you can access GitHub.
 *   June 15 - [Data wrangling part II](https://moffitt.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=c9dcb86c-d5fe-4662-bfbf-aeb5014a74bb)
 *   June 22 - [Visualizations with `ggplot2` part I](https://moffitt.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=59d650c7-fb6d-45b7-9146-aebc014f764c)
 *   June 22 - [Visualizations with `ggplot2` part II](https://moffitt.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=77afb363-11d7-40c5-beff-aec3014a604f)
-*   July 06 - Statistics part I
+*   July 06 - [Statistics part I](https://moffitt.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=88550b82-b60b-42e3-bba4-aeca0151967b)
 *   July 13 - Statistics part II
 *   July 20 - `rmarkdown`
 
