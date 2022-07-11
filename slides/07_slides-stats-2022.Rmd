@@ -509,8 +509,16 @@ ggplot(tcga %>% filter(race %in% c("ASIAN" )),
 ]
 ]
  
-
+---
  
+# Time to event data - survival data
+ 
+Time-to-event data consist of pairs of observations for each individual: 
+(i) a length of time during which no event was observed 
+(ii) an indicator of whether the end of that time period corresponds to an event or just the end of observation 
+ 
+ Survival - event is death (OS)
+ Progression free survival - event is death or disease progression (PFS)
  
 ---
  
@@ -526,7 +534,7 @@ The Kaplan–Meier estimator, also known as the product limit estimator, is a no
  
  
 
-A plot of the Kaplan–Meier estimator is a series of declining horizontal steps which, with a large enough sample size, approaches the true survival function for that population. The value of the survival function between successive distinct sampled observations ("clicks") is assumed to be constant.
+A plot of the Kaplan–Meier estimator is a series of declining horizontal steps which, with a large enough sample size, approaches the true survival function for that population. 
 
 An important advantage of the Kaplan–Meier curve is that the method can take into account some types of censored data, particularly right-censoring, which occurs if a patient withdraws from a study, is lost to follow-up, or is alive without event occurrence at last follow-up. On the plot, small vertical tick-marks state individual patients whose survival times have been right-censored. When no truncation or censoring occurs, the Kaplan–Meier curve is the complement of the empirical distribution function.
 
@@ -688,7 +696,7 @@ $\hat{S}(t)$ = $\prod_{i:t_{i}<t}$ $(1-\frac{d_{i}}{n_{i}})$
 
 ```{r kmcode1yr2 }
  
-summary(survfit(OS_obj ~ gender, data = tcga  ), times = 5, extend=TRUE)
+summary(survfit(OS_obj ~ gender, data = tcga), times = 5, extend=TRUE)
  
 
 
