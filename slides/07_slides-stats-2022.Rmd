@@ -657,7 +657,7 @@ An important advantage of the Kaplan–Meier curve is that the method can take i
 .panel[.panel-name[R Code]
 
 ```{r kmcode, echo = TRUE, fig.show = "hide"}
-
+   
  kmfit <-  survfit(OS_obj ~ gender, data = tcga)
   
  
@@ -710,7 +710,7 @@ summary(survfit(OS_obj ~ gender, data = tcga), times = 5, extend=TRUE)
 --- 
 
 ## Plot code
-
+ 
 p <-  ggsurvplot(kmfit, data = tcga,
            # Add median survival lines
            surv.median.line = "hv", 
@@ -732,8 +732,9 @@ p <-  ggsurvplot(kmfit, data = tcga,
 ---
  
  
-```{r KMplotdisplay , echo = FALSE, fig.height=4.5 , fig.width = 8}    
-p <-  ggsurvplot(kmfit, data = tcga,
+```{r KMplotdisplay , echo = FALSE, fig.height=4.5 , fig.width = 8, include = TRUE, eval=TRUE}    
+ 
+  p <-  ggsurvplot(survfit(survival::Surv(tcga$OS.time/365, I(tcga$vital_status=="Dead"))   ~ gender, data = tcga), data = tcga,
            # Add median survival lines
            surv.median.line = "hv", 
            # Change legends: title & labels
@@ -753,7 +754,6 @@ p <-  ggsurvplot(kmfit, data = tcga,
            # Change ggplot2 theme
            ggtheme = theme_bw(), 
            risk.table.title = "Number at risk") 
- 
 p  
  
 ```   
@@ -863,8 +863,8 @@ survdiff(OS_obj ~ smoking, data = tcga)
  
 ```{r KMplotcodeagain, echo=FALSE,  fig.width=9, fig.height=4.5}
 
-kmfit <-  survfit(OS_obj ~ smoking, data = tcga)   
-ggsurvplot(kmfit, data = tcga,
+#kmfit <-  survfit(OS_obj ~ smoking, data = tcga)   
+ggsurvplot(survfit(survival::Surv(tcga$OS.time/365, I(tcga$vital_status=="Dead"))   ~ smoking, data = tcga), data = tcga,
            # Add median survival lines
            surv.median.line = "hv", 
            # Change legends: title & labels
@@ -893,15 +893,14 @@ ggsurvplot(kmfit, data = tcga,
 
 # Smoking 2 levels:  Never vs former ####
 
-tcga2 <- tcga %>% filter(smoking != "Current")
-OS_obj <- survival::Surv(tcga2$OS.time/365, I(tcga2$vital_status=="Dead"))
-#table(tcga2$smoking)
-kmfit <-  survfit(OS_obj ~ smoking, data = tcga2)
- 
+tcga2 <- tcga %>% filter(smoking != "Current") %>% mutate(sobj = survival::Surv(OS.time/365, I(vital_status=="Dead")) )
+# OS_obj2 <- survival::Surv(tcga2$OS.time/365, I(tcga2$vital_status=="Dead"))
+#  kmfit2 <-  survfit(OS_obj2 ~ smoking, data = tcga2)
+#  
 
+#survfit( survival::Surv(tcga2$OS.time/365, I(tcga2$vital_status=="Dead")) ~ smoking, data = tcga2)
 
-
-ggsurvplot(kmfit, data = tcga2,
+ggsurvplot(survfit(sobj ~ smoking, data = tcga2), data = tcga2,
            surv.median.line = "hv", # Add medians survival
            # Change legends: title & labels
            title= "Overall Survival by smoking status - Former vs Never", 
@@ -928,14 +927,15 @@ ggsurvplot(kmfit, data = tcga2,
 ```{r KMplotcodeCvF, echo=FALSE,  fig.width=9, fig.height=4.5 }    
 # Smoking 2 levels:  CURRENT vs former ####
 
-tcga2 <- tcga %>% filter(smoking != "Never")
-OS_obj <- survival::Surv(tcga2$OS.time/365, I(tcga2$vital_status=="Dead"))
- kmfit <-  survfit(OS_obj ~ smoking, data = tcga2)
+# tcga3 <- tcga %>% filter(smoking != "Never")
+# OS_obj3 <- survival::Surv(tcga3$OS.time/365, I(tcga3$vital_status=="Dead"))
+#  kmfit3 <-  survfit(OS_obj3 ~ smoking, data = tcga3)
  
+tcga3 <- tcga %>% filter(smoking != "Never") %>% mutate(sobj = survival::Surv(OS.time/365, I(vital_status=="Dead")) )
 
 
  
-ggsurvplot(kmfit, data = tcga2,
+ggsurvplot(survfit(sobj ~ smoking, data = tcga3), data = tcga3,
            surv.median.line = "hv", # Add medians survival
            # Change legends: title & labels
            title= "Overall Survival by smoking status - Current vs Former", 
@@ -962,11 +962,14 @@ ggsurvplot(kmfit, data = tcga2,
 
 # Smoking 2 levels:  Current vs Never ####
 
-tcga2 <- tcga %>% filter(smoking != "Former")
-OS_obj <- survival::Surv(tcga2$OS.time/365, I(tcga2$vital_status=="Dead"))
- kmfit <-  survfit(OS_obj ~ smoking, data = tcga2)
+# tcga4 <- tcga %>% filter(smoking != "Former")
+# OS_obj4 <- survival::Surv(tcga4$OS.time/365, I(tcga4$vital_status=="Dead"))
+#  kmfit4 <-  survfit(OS_obj4 ~ smoking, data = tcga4)
  
-ggsurvplot(kmfit, data = tcga2,
+tcga4 <- tcga %>% filter(smoking != "Former") %>% mutate(sobj = survival::Surv(OS.time/365, I(vital_status=="Dead")) )
+
+ 
+ggsurvplot(survfit(sobj ~ smoking, data = tcga4), data = tcga4,
            surv.median.line = "hv", # Add medians survival
            # Change legends: title & labels
            title= "Overall Survival by smoking status - Current vs Never", 
@@ -1031,12 +1034,13 @@ tcganonasmoking <- tcga %>% filter(!is.na(smoking)) %>%
  
 
 # Smoking 2 levels:  Current vs Never ####
+tcga5 <- tcga %>% filter(smoking != "Former") %>% mutate(sobj = survival::Surv(OS.time/365, I(vital_status=="Dead")) )
 
-tcga2 <- tcga %>% filter(smoking != "Former")
-OS_obj <- survival::Surv(tcga2$OS.time/365, I(tcga2$vital_status=="Dead"))
- kmfit <-  survfit(OS_obj ~ smoking, data = tcga2)
+# tcga5 <- tcga %>% filter(smoking != "Former")
+# OS_obj5 <- survival::Surv(tcga5$OS.time/365, I(tcga5$vital_status=="Dead"))
+#  kmfit5 <-  survfit(OS_obj5 ~ smoking, data = tcga5)
  
-ggsurvplot(kmfit, data = tcga2,
+ggsurvplot(survfit(sobj ~ smoking, data = tcga5), data = tcga5,
            surv.median.line = "hv", # Add medians survival
            # Change legends: title & labels
            title= "Overall Survival by smoking status - Current vs Never", 

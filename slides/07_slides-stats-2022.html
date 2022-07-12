@@ -1158,7 +1158,7 @@ lower 95% CI upper 95% CI
 --- 
 
 ## Plot code
-
+ 
 p &lt;-  ggsurvplot(kmfit, data = tcga,
            # Add median survival lines
            surv.median.line = "hv", 
@@ -1222,7 +1222,7 @@ We can now use a `\(\chi ^{2}\)` test of the null hypothesis.
 Test statisic = `\(\frac{\sum_{it}(O_{ij} - E_{ij})^{2}}{var(\sum_{1}^{k}(O_{ij}-E_{ij}))}\)` 
 for each group, where O and E are the totals of the observed and expected events at the time of each event. 
 
--i, denotes the group; j denotes the time that the event occurred,
+- i, denotes the group; j denotes the time that the event occurred,
 - `\(O_{ij}\)`, number of observed events in the ith group at the jth time period,
 - `\(E_{ij}\)`, number of expected events in the ith group at the j th time period.
  
