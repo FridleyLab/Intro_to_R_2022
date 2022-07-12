@@ -4,7 +4,7 @@
     <title>Lea.orange[R]ning about Statistics - YEAH!!!</title>
     <meta charset="utf-8" />
     <meta name="author" content="Zachary Thompson" />
-    <meta name="date" content="2022-07-07" />
+    <meta name="date" content="2022-07-12" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
     <script src="libs/tile-view/tile-view.js"></script>
@@ -48,7 +48,7 @@ Zachary Thompson&lt;br&gt;
 ]
 
 .talk-date.moffitt-gray[
-July 07, 2022
+July 12, 2022
 ]
 ]
 
@@ -1376,18 +1376,14 @@ F-statistic:  2803 on 2 and 1040 DF,  p-value: &lt; 0.00000000000000022
 
 ##  Multivariable regression
  
+Residual standard error: 824.1 on 1040 degrees of freedom
+
+Multiple R-squared:  0.8435,	Adjusted R-squared:  0.8432 
+
+F-statistic:  2803 on 2 and 1040 DF,  p-value: &lt; 0.00000000000000022
+
  
-Residual standard error: 6.94 on 1041 degrees of freedom
 
-Multiple R-squared:  0.9284,	Adjusted R-squared:  0.9283 
-
-F-statistic: 1.349e+04 on 1 and 1041 DF,  p-value: &lt; 0.00000000000000022
-
-
- Residual standard error: 1086 on 580 degrees of freedom
-  (458 observations deleted due to missingness)
-Multiple R-squared:  0.7758,	Adjusted R-squared:  0.7743 
-F-statistic: 501.8 on 4 and 580 DF,  p-value: &lt; 0.00000000000000022
 ---
 
 ##  Multivariable regression 
@@ -1395,32 +1391,38 @@ F-statistic: 501.8 on 4 and 580 DF,  p-value: &lt; 0.00000000000000022
 
 
 ```r
-summary( mlmfit2 &lt;- lm(DUOX1_exp ~ DUOXA1_exp  + gender + smoking , data = tcga) )
+tcgareg &lt;- tcga %&gt;% filter(race %in% c("ASIAN","BLACK OR AFRICAN AMERICAN","WHITE"))
+summary( mlmfit2 &lt;- lm(DUOX1_exp ~ DUOXA1_exp  + gender + race , data = tcgareg) )
 ```
 
 ```
 
 Call:
-lm(formula = DUOX1_exp ~ DUOXA1_exp + gender + smoking, data = tcga)
+lm(formula = DUOX1_exp ~ DUOXA1_exp + gender + race, data = tcgareg)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
--8694.4  -454.4  -140.8   353.8  5918.7 
+-9027.2  -136.7   -41.1    44.4  5940.3 
 
 Coefficients:
-                Estimate Std. Error t value            Pr(&gt;|t|)    
-(Intercept)    167.78923  126.45033   1.327              0.1851    
-DUOXA1_exp       2.96067    0.06663  44.435 &lt;0.0000000000000002 ***
-genderMALE    -156.24001  102.56811  -1.523              0.1282    
-smokingFormer  198.13568  105.87948   1.871              0.0618 .  
-smokingNever   160.65719  119.00951   1.350              0.1776    
+                                Estimate Std. Error t value
+(Intercept)                    252.85311  193.91015   1.304
+DUOXA1_exp                       3.04470    0.04125  73.810
+genderMALE                     -92.88159   55.89298  -1.662
+raceBLACK OR AFRICAN AMERICAN -107.22323  206.76943  -0.519
+raceWHITE                     -111.47975  191.70277  -0.582
+                                         Pr(&gt;|t|)    
+(Intercept)                                0.1925    
+DUOXA1_exp                    &lt;0.0000000000000002 ***
+genderMALE                                 0.0969 .  
+raceBLACK OR AFRICAN AMERICAN              0.6042    
+raceWHITE                                  0.5610    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 1086 on 580 degrees of freedom
-  (458 observations deleted due to missingness)
-Multiple R-squared:  0.7758,	Adjusted R-squared:  0.7743 
-F-statistic: 501.8 on 4 and 580 DF,  p-value: &lt; 0.00000000000000022
+Residual standard error: 825.8 on 1014 degrees of freedom
+Multiple R-squared:  0.844,	Adjusted R-squared:  0.8434 
+F-statistic:  1371 on 4 and 1014 DF,  p-value: &lt; 0.00000000000000022
 ```
 ---
 
@@ -1428,13 +1430,12 @@ F-statistic: 501.8 on 4 and 580 DF,  p-value: &lt; 0.00000000000000022
 ##  Multivariable regression
  
  
- Residual standard error: 1086 on 580 degrees of freedom
-  (458 observations deleted due to missingness)
-  
-Multiple R-squared:  0.7758,	Adjusted R-squared:  0.7743
+Residual standard error: 825.8 on 1014 degrees of freedom
 
-F-statistic: 501.8 on 4 and 580 DF,  p-value: &lt; 0.00000000000000022
----
+Multiple R-squared:  0.844,	Adjusted R-squared:  0.8434 
+
+F-statistic:  1371 on 4 and 1014 DF,  p-value: &lt; 0.00000000000000022
+ 
 
 ---
  

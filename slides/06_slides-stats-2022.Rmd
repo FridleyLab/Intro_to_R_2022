@@ -1216,12 +1216,11 @@ summary( mlmfit<- lm(DUOX1_exp ~ DUOXA1_exp  + gender, data = tcga) )
 
 ##  Multivariable regression
  
- 
-Residual standard error: 6.94 on 1041 degrees of freedom
+Residual standard error: 824.1 on 1040 degrees of freedom
 
-Multiple R-squared:  0.9284,	Adjusted R-squared:  0.9283 
+Multiple R-squared:  0.8435,	Adjusted R-squared:  0.8432 
 
-F-statistic: 1.349e+04 on 1 and 1041 DF,  p-value: < 0.00000000000000022
+F-statistic:  2803 on 2 and 1040 DF,  p-value: < 0.00000000000000022
 
  
 
@@ -1231,8 +1230,8 @@ F-statistic: 1.349e+04 on 1 and 1041 DF,  p-value: < 0.00000000000000022
  
 
 ```{r comment=NA}
-
-summary( mlmfit2 <- lm(DUOX1_exp ~ DUOXA1_exp  + gender + smoking , data = tcga) )
+tcgareg <- tcga %>% filter(race %in% c("ASIAN","BLACK OR AFRICAN AMERICAN","WHITE"))
+summary( mlmfit2 <- lm(DUOX1_exp ~ DUOXA1_exp  + gender + race , data = tcgareg) )
 
 ```
 ---
@@ -1241,13 +1240,12 @@ summary( mlmfit2 <- lm(DUOX1_exp ~ DUOXA1_exp  + gender + smoking , data = tcga)
 ##  Multivariable regression
  
  
- Residual standard error: 1086 on 580 degrees of freedom
-  (458 observations deleted due to missingness)
-  
-Multiple R-squared:  0.7758,	Adjusted R-squared:  0.7743
+Residual standard error: 825.8 on 1014 degrees of freedom
 
-F-statistic: 501.8 on 4 and 580 DF,  p-value: < 0.00000000000000022
----
+Multiple R-squared:  0.844,	Adjusted R-squared:  0.8434 
+
+F-statistic:  1371 on 4 and 1014 DF,  p-value: < 0.00000000000000022
+ 
 
 ---
  
