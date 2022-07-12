@@ -4,7 +4,7 @@
     <title>Lea.orange[R]ning about Statistics</title>
     <meta charset="utf-8" />
     <meta name="author" content="Zachary Thompson" />
-    <meta name="date" content="2022-07-11" />
+    <meta name="date" content="2022-07-12" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
     <script src="libs/tile-view/tile-view.js"></script>
@@ -46,7 +46,7 @@ Zachary Thompson&lt;br&gt;
 ]
 
 .talk-date.moffitt-gray[
-July 11, 2022
+July 12, 2022
 ]
 ]
 
@@ -101,6 +101,14 @@ or to force either to be shown
 ## Data prep: location use here()
  
 
+
+```r
+ here()
+```
+
+```
+[1] "F:/myGitRepo/Intro_to_R_2022"
+```
 
 ```r
  here("data","tcga-clinical.txt")
@@ -530,11 +538,11 @@ ggplot(tcga %&gt;% filter(race %in% c("ASIAN" )),
 # Time to event data - survival data
  
 Time-to-event data consist of pairs of observations for each individual: 
-(i) a length of time during which no event was observed 
-(ii) an indicator of whether the end of that time period corresponds to an event or just the end of observation 
+- (i) a length of time during which no event was observed 
+- (ii) an indicator of whether the end of that time period corresponds to an event or just the end of observation 
  
- Survival - event is death (OS)
- Progression free survival - event is death or disease progression (PFS)
+- Survival ~ event is death (OS)
+- Progression free survival ~ event is death or disease progression (PFS)
  
 ---
  
@@ -544,19 +552,10 @@ The Kaplan–Meier estimator, also known as the product limit estimator, is a no
 
 
  
----
-
-## Kaplan-Meier estimates and curves
- 
- 
-
-A plot of the Kaplan–Meier estimator is a series of declining horizontal steps which, with a large enough sample size, approaches the true survival function for that population. 
-
-An important advantage of the Kaplan–Meier curve is that the method can take into account some types of censored data, particularly right-censoring, which occurs if a patient withdraws from a study, is lost to follow-up, or is alive without event occurrence at last follow-up. On the plot, small vertical tick-marks state individual patients whose survival times have been right-censored. When no truncation or censoring occurs, the Kaplan–Meier curve is the complement of the empirical distribution function.
 
 ---
 
-## Kaplan-Meier estimates and curves
+## Kaplan-Meier estimates 
  
 The estimator of the survival function: 
  
@@ -565,6 +564,21 @@ The estimator of the survival function:
 *   `\(\hat{S}(t)\)` = probability survival is longer than `\(t\)` 
 *   `\(d_{i}\)` = number of deaths (events) that happened at time `\(t_{i}\)` 
 *   `\(n_{i}\)` = number of individuals that have survived to time `\(t_{i}\)`
+
+
+
+
+---
+
+## Kaplan-Meier estimates and curves 
+ 
+ 
+
+A plot of the Kaplan–Meier estimator is a series of declining horizontal steps which, with a large enough sample size, approaches the true survival function for that population. 
+
+An important advantage of the Kaplan–Meier curve is that the method can take into account some types of censored data, particularly right-censoring, which occurs if a patient withdraws from a study, is lost to follow-up, or is alive without event occurrence at last follow-up. On the plot, small vertical tick-marks state individual patients whose survival times have been right-censored. When no truncation or censoring occurs, the Kaplan–Meier curve is the complement of the empirical distribution function.
+
+
 
 ---
  
@@ -1172,34 +1186,63 @@ p &lt;-  ggsurvplot(kmfit, data = tcga,
  
 # Log rank test
   
-The log rank test is a hypothesis test to compare the survival distributions of two or more samples. It is a nonparametric test and appropriate to use when the data are right skewed and censored. It is widely used in clinical trials to establish the efficacy of a new treatment in comparison with a control treatment when the measurement is the time to event (such as the time from initial treatment to a heart attack)
+The log rank test is a hypothesis test to compare the 
+survival distributions of two or more samples. 
 
-The test is sometimes called the Mantel–Cox test, named after Nathan Mantel and David Cox. 
+- Nonparametric test and appropriate to use when the data are 
+right skewed and censored. 
 
-The logrank test can also be viewed as a time-stratified Cochran–Mantel–Haenszel test.
+- Widely used in clinical trials to establish the efficacy of 
+a new treatment in comparison with a control treatment when the
+measurement is the time to event.
+
+The test is sometimes called the Mantel–Cox test, named after 
+Nathan Mantel and David Cox. The logrank test can also be viewed 
+as a time-stratified Cochran–Mantel–Haenszel test.
   
 
 ---
  
-# Log rank test
+## Log rank test
 
-The logrank test is used to test the null hypothesis that there is no 
+The logrank test is used to test the null hypothesis that there is no
 difference between the populations in the probability of an event 
-(here a death) at any time point. The analysis is based on the times 
-of events (here deaths). For each such time we calculate the observed
+(death) at any time point. The analysis is based on the times 
+of events (deaths). For each such time we calculate the observed
 number of deaths in each group and the number expected if there were 
 in reality no difference between the groups.
 
-
-
-We can now use a `\(\chi ^{2}\)` test of the null hypothesis. The test statistic is 
-the sum of `\(\sum_{it}\)` `\(\frac{(O_{it} - E_{it})^{2}}{E_{it}}\)` for each group, where O and E are the totals of
- the observed and expected events at the time of each event. 
-  
-  
 ---
  
-# Log rank test
+## Log rank test: test statistic
+
+ 
+We can now use a `\(\chi ^{2}\)` test of the null hypothesis.  
+
+Test statisic = `\(\frac{\sum_{it}(O_{ij} - E_{ij})^{2}}{var(\sum_{1}^{k}(O_{ij}-E_{ij}))}\)` 
+for each group, where O and E are the totals of the observed and expected events at the time of each event. 
+
+-i, denotes the group; j denotes the time that the event occurred,
+- `\(O_{ij}\)`, number of observed events in the ith group at the jth time period,
+- `\(E_{ij}\)`, number of expected events in the ith group at the j th time period.
+ 
+---
+ 
+## Log rank test: test statistic
+
+- `\(O_{ij}\)` = `\(\sum_{j=1}^{K}d_{ij}\)`
+
+- `\(E_{ij}\)` = `\(\sum_{j=1}^{K}d_{ij}\frac{r_{ij}}{r_j}\)`
+
+Test statistic = `\(\frac{(\sum_{j}(d_{ij}-d_{j}\frac{r_{ij}}{r_{j}})))^{2}}{\sum_{j=1}^k\frac{r_{1j}r_{2j}d_{j}(r_{j}-d_{j}) }{r_{j}^{2}(r_{j}-1) }}\)`
+
+ 
+
+
+
+---
+ 
+## Log rank test
   
   The logrank test is based on the same assumptions as the Kaplan Meier 
 survival curve, namely, that censoring is unrelated to prognosis, the 
@@ -1218,7 +1261,7 @@ or a confidence interval.
  
  
  
-# Log rank test R code
+## Log rank test R code
  
 
 ```r
@@ -1278,7 +1321,7 @@ smoking=Never   160       49     63.1     3.157     4.463
 
 ---
  
-# Log rank test R code: pair wise comparisions
+## Log rank test R code: pair wise comparisions
  
  
 .panelset[
@@ -1298,7 +1341,8 @@ tcganonasmoking &lt;- tcga %&gt;% filter(!is.na(smoking)) %&gt;%
 
 
 ```r
- pairwise_survdiff(OS_objs ~  smoking, data = tcganonasmoking, p.adjust.method = "none",   rho = 0)
+ pairwise_survdiff(OS_objs ~  smoking, data = tcganonasmoking, 
+                   p.adjust.method = "none", rho = 0)
 ```
 
 ```
