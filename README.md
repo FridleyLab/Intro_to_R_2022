@@ -89,7 +89,8 @@ before you arrive that you can access GitHub.
     II](https://moffitt.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=77afb363-11d7-40c5-beff-aec3014a604f)
 -   July 06 - [Statistics part
     I](https://moffitt.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=88550b82-b60b-42e3-bba4-aeca0151967b)
--   July 13 - Statistics part II
+-   July 13 - [Statistics part
+    II](https://moffitt.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=3ba6f5c1-a058-4d93-85f8-aed1014d746f)
 -   July 20 - `rmarkdown`
 
 ## Instructors
