@@ -18,9 +18,9 @@ Introduction to R
 
 -----
 
-:calendar: Wednesday June 01 - July 20, 2022
+:calendar: 2023
 
-:alarm_clock: 3-4 pm
+:alarm_clock: ??
 
 :office: via [Zoom](https://moffitt.zoom.us/j/99031977384)
 
@@ -82,7 +82,7 @@ new to the `tidyverse` framework?
 
 ## Materials
 
-Materials will be made available on [GitHub](https://github.com/FridleyLab/Intro_to_R_2022/).  
+Materials will be made available on [GitHub](https://github.com/FridleyLab/Intro_to_R_2023/).  
 If you are using an organization-issued laptop, you may want to verify before you 
 arrive that you can access GitHub.
 
